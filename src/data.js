@@ -32,4 +32,7 @@ const response = {
 // console.log(response.date_debut);
 // console.log(response.date_fin);
 // console.log(response.intervenants);
-console.log(response.date_debut.replace(/[-:]|[.].*/g,''));
+// console.log(response.date_debut.replace(/[-:]|[.].*/g,''));
+console.log(
+    `test: ${response.favori.f2}\\n
+DESCRIPTION:this is a description ${response.favori.f2}`)

@@ -8,116 +8,90 @@ DTSTART;TZID=Europe/Paris:20221107T081000
 DTEND;TZID=Europe/Paris:20221107T100500
 SUMMARY:Programmation Avancée Orientée Objet
 LOCATION:F231 - Mini-amphi
-DESCRIPTION:Cours magistral
-Intervenants : HNAINI, MAZO
-null
+DESCRIPTION:Cours magistral\nIntervenants: HNAINI, MAZO\nnull
 END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Paris:20221107T102000
 DTEND;TZID=Europe/Paris:20221107T121500
 SUMMARY:Programmation Avancée Orientée Objet
 LOCATION:E203 - Info
-DESCRIPTION:Travaux dirigés
-Intervenants : GUERIN
-null
+DESCRIPTION:Travaux dirigés\nIntervenants: GUERIN\nnull
 END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Paris:20221107T130000
 DTEND;TZID=Europe/Paris:20221107T133000
 SUMMARY:null
 LOCATION:F144 - Mini-amphi
-DESCRIPTION:Hors formation
-Intervenants : BESNARD
-Présentation de Ocean Hackathon
+DESCRIPTION:Hors formation\nIntervenants: BESNARD\nPrésentation de Ocean Hackathon
 END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Paris:20221107T133000
 DTEND;TZID=Europe/Paris:20221107T173500
 SUMMARY:Architecture des ordinateurs
 LOCATION:F016 - Info (audio)
-DESCRIPTION:Travaux dirigés
-Intervenants : BOLLENGIER
-null
+DESCRIPTION:Travaux dirigés\nIntervenants: BOLLENGIER\nnull
 END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Paris:20221108T081000
 DTEND;TZID=Europe/Paris:20221108T100500
 SUMMARY:Conduite de projet / Management Interculturel
 LOCATION:F201 bis - Cours
-DESCRIPTION:Travaux dirigés
-Intervenants : MÉAR-GARCIA
-null
+DESCRIPTION:Travaux dirigés\nIntervenants: MÉAR-GARCIA\nnull
 END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Paris:20221108T102000
 DTEND;TZID=Europe/Paris:20221108T121500
 SUMMARY:Conduite de projet / Management Interculturel
 LOCATION:Amphithéâtre 2
-DESCRIPTION:Cours magistral
-Intervenants : STEIN
-null
+DESCRIPTION:Cours magistral\nIntervenants: STEIN\nnull
 END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Paris:20221108T123000
 DTEND;TZID=Europe/Paris:20221108T133000
 SUMMARY:null
 LOCATION:F144 - Mini-amphi
-DESCRIPTION:Hors formation
-Intervenants : ADAM
-Rencontre Agora Glaz - Du climat dans le débat ! - partenariat HOLI-D Blue
+DESCRIPTION:Hors formation\nIntervenants: ADAM\nRencontre Agora Glaz - Du climat dans le débat ! - partenariat HOLI-D Blue
 END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Paris:20221108T133000
 DTEND;TZID=Europe/Paris:20221108T152500
 SUMMARY:Conduite de projet / Management Interculturel
 LOCATION:Amphithéâtre 2
-DESCRIPTION:Cours magistral
-Intervenants : HUBERT
-null
+DESCRIPTION:Cours magistral\nIntervenants: HUBERT\nnull
 END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Paris:20221108T154000
 DTEND;TZID=Europe/Paris:20221108T173500
 SUMMARY:Projet Système acte 1
 LOCATION:E204 - Info / E206 - SNS
-DESCRIPTION:Travaux dirigés
-Intervenants : null
-null
+DESCRIPTION:Travaux dirigés\nIntervenants: null\nnull
 END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Paris:20221109T081000
 DTEND;TZID=Europe/Paris:20221109T100500
 SUMMARY:LV2 : espagnol III
 LOCATION:F109 - Cours
-DESCRIPTION:Travaux dirigés
-Intervenants : AGUILAR
-null
+DESCRIPTION:Travaux dirigés\nIntervenants: AGUILAR\nnull
 END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Paris:20221109T102000
 DTEND;TZID=Europe/Paris:20221109T121500
 SUMMARY:Sport III
 LOCATION:Salle d'examen / Salle omnisport
-DESCRIPTION:Travaux dirigés
-Intervenants : CAMPION, MAJOREL, PERROT, ROUZIC
-null
+DESCRIPTION:Travaux dirigés\nIntervenants: CAMPION, MAJOREL, PERROT, ROUZIC\nnull
 END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Paris:20221109T133000
 DTEND;TZID=Europe/Paris:20221109T152500
 SUMMARY:Mathématiques TRC 2A
 LOCATION:F223 - Info
-DESCRIPTION:Travaux pratiques
-Intervenants : BONNAFONT
-null
+DESCRIPTION:Travaux pratiques\nIntervenants: BONNAFONT\nnull
 END:VEVENT
 BEGIN:VEVENT
 DTSTART;TZID=Europe/Paris:20221109T154000
 DTEND;TZID=Europe/Paris:20221109T173500
 SUMMARY:LV1 : anglais III
 LOCATION:F102 - Cours
-DESCRIPTION:Travaux dirigés
-Intervenants : TOULOUSE
-null
+DESCRIPTION:Travaux dirigés\nIntervenants: TOULOUSE\nnull
 END:VEVENT
 END:VCALENDAR

@@ -15,3 +15,30 @@ node [nom fichier].js
 ```
 
 Plus d'explications viendront plus tard dans le projet.
+
+## Roadmap
+
+- [ ] Backend
+  - [ ] Connexion de l'utilisateur pour récup data
+  - [ ] Récupération des données à partir de l'api ENSTA Bretagne (AURION)
+  - [ ] Traitement et convertion au format ics
+    - [ ] Gérer les différences, les majs de calendrier, etc...
+  - [ ] Génération d'un lien automatique pour synchronisation avec calendrier
+  - [ ] Gérer les erreurs ou alerter si problème.
+- [ ] Frontend
+  - [ ] Site internet simple et facile d'utilisation
+  - [ ] Interface de login de base (pour connexion ENSTA B)
+    - [ ] username
+    - [ ] password
+  - [ ] Passage à interface pour récup calendrier
+    - [ ] V1
+      - [ ] paramétrage des dates de la période à prendre
+      - [ ] Interface pour visualisation des changements
+      - [ ] Lien de téléchargement du fichier ics
+    - [ ] V2
+      - [ ] Lien de synchronisation directement
+        - [ ] la synchro se fait automatiquement en backend avec le calendrier de l'utilisateur (que le calendrier soit : google calendar, outlook, apple calendar, ...)
+- [ ] Vérification avant déploiement
+  - [ ] Vérif sécurité
+    - [ ] ne pas pouvoir accéder à la page après login si ne fonctionne pas.
+- [ ] Documentation du code et du projet
