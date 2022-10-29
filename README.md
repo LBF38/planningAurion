@@ -19,9 +19,10 @@ Plus d'explications viendront plus tard dans le projet.
 ## Roadmap
 
 - [ ] Backend
-  - [ ] Connexion de l'utilisateur pour récup data
-  - [ ] Récupération des données à partir de l'api ENSTA Bretagne (AURION)
-  - [ ] Traitement et convertion au format ics
+  - [x] Connexion de l'utilisateur pour récup user token
+  - [x] Récupération des données à partir de l'api ENSTA Bretagne (AURION)
+  - [ ] Traitement et conversion au format ics
+    - [x] Génération d'un fichier ics
     - [ ] Gérer les différences, les majs de calendrier, etc...
   - [ ] Génération d'un lien automatique pour synchronisation avec calendrier
   - [ ] Gérer les erreurs ou alerter si problème.

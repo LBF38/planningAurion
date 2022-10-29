@@ -4,12 +4,32 @@ var moment = require("moment");
 var start = moment("2022-11-07");
 var end = moment("2022-11-09");
 var axios = require("axios");
+const apiURL = "https://formation.ensta-bretagne.fr/mobile";
+
+async function getUserToken(username, password) {
+  var config = {
+    method: "POST",
+    url: "/login",
+    baseURL: apiURL,
+    data: {
+      login: username,
+      password: password,
+    },
+  };
+  try {
+    const response = await axios(config);
+    process.env.AURION_TOKEN = response.data.normal;
+    return process.env.AURION_TOKEN != null;
+  } catch (error) {
+    console.error(error);
+  }
+}
 
 async function getPlanning() {
   var config = {
     method: "GET",
     url: "/mon_planning",
-    baseURL: "https://formation.ensta-bretagne.fr/mobile",
+    baseURL: apiURL,
     headers: {
       Authorization: "Bearer " + process.env.AURION_TOKEN,
     },
@@ -37,8 +57,7 @@ async function getPlanning() {
       event.date_fin = event.date_fin.replace(/[-:]|[.].*/g, "");
       ics.push(event);
     }
-    var icsMSG = convertToICS(ics);
-    writeICS(icsMSG);
+    return convertToICS(ics);
   } catch (error) {
     console.error(error);
   }
@@ -66,6 +85,7 @@ END:VEVENT
   icsMSG += "END:VCALENDAR";
   return icsMSG;
 }
+
 function writeICS(icsMSG) {
   console.log(icsMSG);
   fs.writeFile("aurion.ics", icsMSG, function (err) {
@@ -74,4 +94,7 @@ function writeICS(icsMSG) {
     }
   });
 }
-getPlanning();
+if (getUserToken(process.env.AURION_USERNAME, process.env.AURION_PASSWORD)) {
+  var icsMSG = getPlanning();
+  writeICS(icsMSG);
+}
