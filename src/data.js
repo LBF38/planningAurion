@@ -32,3 +32,4 @@ const response = {
 // console.log(response.date_debut);
 // console.log(response.date_fin);
 // console.log(response.intervenants);
+console.log(response.date_debut.replace(/[-:]|[.].*/g,''));
