@@ -20,8 +20,6 @@ async function getUserToken(username, password) {
     const response = await axios(config);
     process.env.AURION_TOKEN = response.data.normal;
     return process.env.AURION_TOKEN != null;
-    // console.log(response.data); // debug
-    // console.log(process.env.AURION_TOKEN);
   } catch (error) {
     console.error(error);
   }
@@ -96,7 +94,6 @@ function writeICS(icsMSG) {
     }
   });
 }
-// getPlanning();
 if (getUserToken(process.env.AURION_USERNAME, process.env.AURION_PASSWORD)) {
   var icsMSG = getPlanning();
   writeICS(icsMSG);
