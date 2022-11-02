@@ -56,8 +56,8 @@ async function getPlanning() {
         // console.log("Pause");
         continue;
       }
-      if(!event.description){
-        event.description="";
+      if (!event.description) {
+        event.description = "";
       }
       event.date_debut = event.date_debut.replace(/[-:]|[.].*/g, "");
       event.date_fin = event.date_fin.replace(/[-:]|[.].*/g, "");
@@ -82,11 +82,15 @@ VERSION:2.0
 
   for (let event of calendar) {
     icsMSG += `BEGIN:VEVENT
+UID:${randomUUID()}
+DTSTAMP:${moment().format("YYYYMMDDThhmmss")}
 DTSTART;TZID=Europe/Paris:${event.date_debut}
 DTEND;TZID=Europe/Paris:${event.date_fin}
 SUMMARY:${event.favori.f3}
 LOCATION:${event.favori.f2}
-DESCRIPTION:${event.type_activite}\\nIntervenants: ${event.intervenants}\\n${event.description}
+DESCRIPTION:${event.type_activite}\\nIntervenants: ${event.intervenants}\\n${
+      event.description
+    }
 END:VEVENT
 `;
   }
@@ -104,20 +108,13 @@ function writeICS(icsMSG) {
   });
 }
 
-// if (getUserToken(process.env.AURION_USERNAME, process.env.AURION_PASSWORD)) {
-//   console.log(process.env.AURION_TOKEN);
-//   var ics = getPlanning();
-//   console.log(ics);
-//   var icsMSG = convertToICS(ics);
-//   writeICS(icsMSG);
-// }
 getUserToken(process.env.AURION_USERNAME, process.env.AURION_PASSWORD)
   .then(() => {
     console.log(process.env.AURION_TOKEN);
     getPlanning()
       .then((ics) => {
         // console.log(ics);
-        var icsMSG=convertToICS(ics);
+        var icsMSG = convertToICS(ics);
         console.log(icsMSG);
         writeICS(icsMSG);
       })
@@ -128,9 +125,3 @@ getUserToken(process.env.AURION_USERNAME, process.env.AURION_PASSWORD)
   .catch((error) => {
     console.log(error);
   });
-// console.log(process.env.AURION_USERNAME);
-
-// getPlanning().catch((error) => {
-//   console.error(error);
-// });
-// console.log(randomUUID());
