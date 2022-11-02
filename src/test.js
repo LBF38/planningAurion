@@ -1,12 +1,14 @@
-require("dotenv").config();
+require("dotenv/config");
 var fs = require("fs");
 var moment = require("moment");
 var start = moment("2022-11-07");
 var end = moment("2022-11-09");
 var axios = require("axios");
+const { randomUUID } = require("crypto");
 const apiURL = "https://formation.ensta-bretagne.fr/mobile";
 
 async function getUserToken(username, password) {
+  console.log("Getting User token...");
   var config = {
     method: "POST",
     url: "/login",
@@ -19,13 +21,14 @@ async function getUserToken(username, password) {
   try {
     const response = await axios(config);
     process.env.AURION_TOKEN = response.data.normal;
-    return process.env.AURION_TOKEN != null;
+    // return process.env.AURION_TOKEN != null;
   } catch (error) {
     console.error(error);
   }
 }
 
 async function getPlanning() {
+  console.log("Get planning...");
   var config = {
     method: "GET",
     url: "/mon_planning",
@@ -46,24 +49,29 @@ async function getPlanning() {
     for (let i = 0; i < calendar.length; i++) {
       const event = calendar[i];
       if (event.is_empty) {
-        console.log("Pas de cours\n");
+        // console.log("Pas de cours\n");
         continue;
       }
       if (event.is_break) {
-        console.log("Pause");
+        // console.log("Pause");
         continue;
+      }
+      if(!event.description){
+        event.description="";
       }
       event.date_debut = event.date_debut.replace(/[-:]|[.].*/g, "");
       event.date_fin = event.date_fin.replace(/[-:]|[.].*/g, "");
       ics.push(event);
     }
-    return convertToICS(ics);
+    // console.log(ics);
+    return ics;
   } catch (error) {
     console.error(error);
   }
 }
 
 function convertToICS(calendar) {
+  console.log("Convert to ics ...");
   // Création du fichier ICS à partir des données récupérées
   let icsMSG = `BEGIN:VCALENDAR
 CALSCALE:GREGORIAN
@@ -87,14 +95,42 @@ END:VEVENT
 }
 
 function writeICS(icsMSG) {
-  console.log(icsMSG);
+  console.log("Write ics...");
+  // console.log(icsMSG);
   fs.writeFile("aurion.ics", icsMSG, function (err) {
     if (err) {
       return console.log(err);
     }
   });
 }
-if (getUserToken(process.env.AURION_USERNAME, process.env.AURION_PASSWORD)) {
-  var icsMSG = getPlanning();
-  writeICS(icsMSG);
-}
+
+// if (getUserToken(process.env.AURION_USERNAME, process.env.AURION_PASSWORD)) {
+//   console.log(process.env.AURION_TOKEN);
+//   var ics = getPlanning();
+//   console.log(ics);
+//   var icsMSG = convertToICS(ics);
+//   writeICS(icsMSG);
+// }
+getUserToken(process.env.AURION_USERNAME, process.env.AURION_PASSWORD)
+  .then(() => {
+    console.log(process.env.AURION_TOKEN);
+    getPlanning()
+      .then((ics) => {
+        // console.log(ics);
+        var icsMSG=convertToICS(ics);
+        console.log(icsMSG);
+        writeICS(icsMSG);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  })
+  .catch((error) => {
+    console.log(error);
+  });
+// console.log(process.env.AURION_USERNAME);
+
+// getPlanning().catch((error) => {
+//   console.error(error);
+// });
+// console.log(randomUUID());
