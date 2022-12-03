@@ -8,14 +8,18 @@ const apiURL = "https://formation.ensta-bretagne.fr/mobile";
 
 exports.getPlanning = (req, res, next) => {
   console.log("Getting planning...");
-  getPlanning().then((calendar) => {
-    const icsMSG = convertToICS(calendar);
-    writeICS(icsMSG);
-    res.status(200).json({
-      message: "Planning récupéré",
-      data: calendar,
+  getPlanning()
+    .then((calendar) => {
+      const icsMSG = convertToICS(calendar);
+      writeICS(icsMSG);
+      res.status(200).json({
+        message: "Planning récupéré",
+        data: calendar,
+      });
+    })
+    .catch((error) => {
+      res.status(400).json({ error: error });
     });
-  });
 };
 
 async function getPlanning() {
@@ -57,6 +61,7 @@ async function getPlanning() {
     return ics;
   } catch (error) {
     console.error(error);
+    throw error;
   }
 }
 

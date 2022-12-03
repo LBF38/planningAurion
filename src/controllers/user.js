@@ -1,22 +1,37 @@
 const User = require("../models/User");
 const axios = require("axios");
+const apiURL = "https://formation.ensta-bretagne.fr/mobile";
 
 exports.getToken = (req, res, next) => {
-  console.log("Getting User token...");
+  console.log("Getting token...");
+  getUserToken(req.body.username, req.body.password)
+    .then((token) => {
+      res.status(200).json({
+        message: "Token récupéré",
+        data: process.env.AURION_TOKEN,
+      });
+    })
+    .catch((error) => {
+      res.status(403).json({ error: error.message });
+    });
+};
+
+async function getUserToken(username, password) {
   var config = {
     method: "POST",
     url: "/login",
     baseURL: apiURL,
     data: {
-      login: req.body.username,
-      password: req.body.password,
+      login: username,
+      password: password,
     },
   };
   try {
-    const response = axios(config);
+    const response = await axios(config);
     process.env.AURION_TOKEN = response.data.normal;
     // return process.env.AURION_TOKEN != null;
   } catch (error) {
     console.error(error);
+    throw error;
   }
-};
+}
