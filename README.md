@@ -14,6 +14,12 @@ Pour lancer un script JS, utiliser la commande :
 node [nom fichier].js
 ```
 
+Pour lancer le serveur de développement, utiliser la commande :
+
+```nodejs
+npm run dev
+```
+
 Plus d'explications viendront plus tard dans le projet.
 
 ## Roadmap
