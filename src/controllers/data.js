@@ -1,48 +1,43 @@
 require("dotenv/config");
-var fs = require("fs");
-var moment = require("moment");
-var start = moment("2022-12-08");
-var end = moment("2022-12-12");
-var axios = require("axios");
+const Data = require("../models/data");
+const axios = require("axios");
+const moment = require("moment");
+const fs = require("fs");
 const { randomUUID } = require("crypto");
 const apiURL = "https://formation.ensta-bretagne.fr/mobile";
 
-async function getUserToken(username, password) {
-  console.log("Getting User token...");
-  var config = {
-    method: "POST",
-    url: "/login",
-    baseURL: apiURL,
-    data: {
-      login: username,
-      password: password,
-    },
-  };
-  try {
-    const response = await axios(config);
-    process.env.AURION_TOKEN = response.data.normal;
-    // return process.env.AURION_TOKEN != null;
-  } catch (error) {
-    console.error(error);
-  }
-}
+exports.getPlanning = (req, res, next) => {
+  console.log("Getting planning...");
+  getPlanning(req.body.startDate, req.body.endDate)
+    .then((calendar) => {
+      const icsMSG = convertToICS(calendar);
+      writeICS(icsMSG);
+      res.status(200).json({
+        message: "Planning récupéré",
+        data: calendar, // should send a link to the ics file for download
+      });
+      console.log("Planning sent");
+    })
+    .catch((error) => {
+      res.status(400).json({ error: error });
+    });
+};
 
-async function getPlanning() {
-  console.log("Get planning...");
-  var config = {
-    method: "GET",
-    url: "/mon_planning",
-    baseURL: apiURL,
-    headers: {
-      Authorization: "Bearer " + process.env.AURION_TOKEN,
-    },
-    params: {
-      date_debut: start.format("YYYY-MM-DD"),
-      date_fin: end.format("YYYY-MM-DD"),
-    },
-  };
-
+async function getPlanning(startDate, endDate) {
   try {
+    var config = {
+      method: "GET",
+      url: "/mon_planning",
+      baseURL: apiURL,
+      headers: {
+        Authorization: "Bearer " + process.env.AURION_TOKEN,
+      },
+      params: {
+        date_debut: moment(startDate).format("YYYY-MM-DD"),
+        date_fin: moment(endDate).format("YYYY-MM-DD"),
+      },
+    };
+
     const response = await axios(config);
     var calendar = response.data;
     var ics = [];
@@ -63,10 +58,10 @@ async function getPlanning() {
       event.date_fin = event.date_fin.replace(/[-:]|[.].*/g, "");
       ics.push(event);
     }
-    // console.log(ics);
     return ics;
   } catch (error) {
     console.error(error);
+    throw error;
   }
 }
 
@@ -95,36 +90,16 @@ END:VEVENT
 `;
   }
   icsMSG += "END:VCALENDAR";
+  console.log("ICS converted");
   return icsMSG;
 }
 
 function writeICS(icsMSG) {
   console.log("Write ics...");
-  // console.log(icsMSG);
-  fs.writeFile("aurion.ics", icsMSG, function (err) {
+  fs.writeFile("src/assets/aurion.ics", icsMSG, function (err) {
     if (err) {
       return console.log(err);
     }
   });
+  console.log("ICS written");
 }
-
-getUserToken(process.env.AURION_USERNAME, process.env.AURION_PASSWORD)
-  .then(() => {
-    console.log(process.env.AURION_TOKEN);
-    getPlanning()
-      .then((ics) => {
-        // console.log(ics);
-        var icsMSG = convertToICS(ics);
-        console.log(icsMSG);
-        writeICS(icsMSG);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  })
-  .catch((error) => {
-    console.log(error);
-  });
-
-
-  
