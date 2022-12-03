@@ -5,11 +5,12 @@ const apiURL = "https://formation.ensta-bretagne.fr/mobile";
 exports.getToken = (req, res, next) => {
   console.log("Getting token...");
   getUserToken(req.body.username, req.body.password)
-    .then((token) => {
+    .then(() => {
       res.status(200).json({
         message: "Token récupéré",
-        data: process.env.AURION_TOKEN,
+        token: process.env.AURION_TOKEN,
       });
+      console.log("Token sent");
     })
     .catch((error) => {
       res.status(403).json({ error: error.message });
