@@ -31,7 +31,7 @@ Plus d'explications viendront plus tard dans le projet.
     - [x] Génération d'un fichier ics
     - [ ] Gérer les différences, les majs de calendrier, etc...
   - [ ] Génération d'un lien automatique pour synchronisation avec calendrier
-  - [ ] Gérer les erreurs ou alerter si problème.
+  - [x] Gérer les erreurs ou alerter si problème.
 - [ ] Frontend
   - [ ] Site internet simple et facile d'utilisation
   - [ ] Interface de login de base (pour connexion ENSTA B)
