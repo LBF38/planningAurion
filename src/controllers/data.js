@@ -8,7 +8,7 @@ const apiURL = "https://formation.ensta-bretagne.fr/mobile";
 
 exports.getPlanning = (req, res, next) => {
   console.log("Getting planning...");
-  getPlanning()
+  getPlanning(req.body.startDate, req.body.endDate)
     .then((calendar) => {
       const icsMSG = convertToICS(calendar);
       writeICS(icsMSG);
@@ -22,21 +22,21 @@ exports.getPlanning = (req, res, next) => {
     });
 };
 
-async function getPlanning() {
-  var config = {
-    method: "GET",
-    url: "/mon_planning",
-    baseURL: apiURL,
-    headers: {
-      Authorization: "Bearer " + process.env.AURION_TOKEN,
-    },
-    params: {
-      date_debut: start.format("YYYY-MM-DD"),
-      date_fin: end.format("YYYY-MM-DD"),
-    },
-  };
-
+async function getPlanning(startDate, endDate) {
   try {
+    var config = {
+      method: "GET",
+      url: "/mon_planning",
+      baseURL: apiURL,
+      headers: {
+        Authorization: "Bearer " + process.env.AURION_TOKEN,
+      },
+      params: {
+        date_debut: moment(startDate).format("YYYY-MM-DD"),
+        date_fin: moment(endDate).format("YYYY-MM-DD"),
+      },
+    };
+
     const response = await axios(config);
     var calendar = response.data;
     var ics = [];
@@ -68,26 +68,43 @@ async function getPlanning() {
 function convertToICS(calendar) {
   console.log("Convert to ics ...");
   // Création du fichier ICS à partir des données récupérées
-  let icsMSG = `BEGIN:VCALENDAR
-  CALSCALE:GREGORIAN
-  METHOD:PUBLISH
-  PRODID:-//Aurion//FR
-  VERSION:2.0
-  `;
+  let icsMSG =
+    "BEGIN:VCALENDAR\n" +
+    "CALSCALE:GREGORIAN\n" +
+    "METHOD:PUBLISH\n" +
+    "PRODID:-//Aurion//FR\n" +
+    "VERSION:2.0\n";
 
   for (let event of calendar) {
-    icsMSG += `BEGIN:VEVENT
-  UID:${randomUUID()}
-  DTSTAMP:${moment().format("YYYYMMDDThhmmss")}
-  DTSTART;TZID=Europe/Paris:${event.date_debut}
-  DTEND;TZID=Europe/Paris:${event.date_fin}
-  SUMMARY:${event.favori.f3}
-  LOCATION:${event.favori.f2}
-  DESCRIPTION:${event.type_activite}\\nIntervenants: ${event.intervenants}\\n${
-      event.description
-    }
-  END:VEVENT
-  `;
+    icsMSG +=
+      "BEGIN:VEVENT\n" +
+      "UID:" +
+      randomUUID() +
+      "\n" +
+      "DTSTAMP:" +
+      moment().format("YYYYMMDDThhmmss") +
+      "Z\n" +
+      "DTSTART;TZID=Europe/Paris:" +
+      event.date_debut +
+      "\n" +
+      "DTEND;TZID=Europe/Paris:" +
+      event.date_fin +
+      "\n" +
+      "SUMMARY:" +
+      event.favori.f3 +
+      "\n" +
+      "LOCATION:" +
+      event.favori.f2 +
+      "\n" +
+      "DESCRIPTION:" +
+      event.type_activite +
+      "\\n" +
+      "Intervenants:" +
+      event.intervenants +
+      "\\n" +
+      event.description +
+      "\n" +
+      "END:VEVENT\n";
   }
   icsMSG += "END:VCALENDAR";
   return icsMSG;
@@ -96,7 +113,7 @@ function convertToICS(calendar) {
 function writeICS(icsMSG) {
   console.log("Write ics...");
   // console.log(icsMSG);
-  fs.writeFile("assets/aurion.ics", icsMSG, function (err) {
+  fs.writeFile("src/assets/aurion.ics", icsMSG, function (err) {
     if (err) {
       return console.log(err);
     }
