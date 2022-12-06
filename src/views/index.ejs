@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Testing planning Aurion</title>
+  </head>
+  <body>
+    <h1>Welcome to the Planning AURION synchronizer ! (V1.0)</h1>
+    <h2>What is this tool ?</h2>
+    <p>
+      This tool is a simple tool to synchronize your planning from ENSTA
+      Bretagne's planning (Aurion platform) to Google Calendar or any Calendar
+      service.
+    </p>
+    <h2>How to use it ?</h2>
+    <p>
+      To use this tool, you need to enter your Aurion credentials in the form
+      below. These are your credentials when you connect to
+      <a href="https://formation.ensta-bretagne.fr">Aurion</a>. **Your
+      credentials are not stored anywhere, they are only used to connect to
+      Aurion and get your planning.**
+    </p>
+    <form action="/auth/login" method="post">
+      <label for="username">Username</label>
+      <input type="text" name="username" id="username" autofocus required />
+      <label for="password">Password</label>
+      <input type="password" name="password" id="password" required />
+      <input type="submit" value="Submit" />
+    </form>
+  </body>
+</html>

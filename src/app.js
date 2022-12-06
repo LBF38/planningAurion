@@ -3,6 +3,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const path = require("path");
 
+const mainRoutes = require("./routes/main");
 const dataRoutes = require("./routes/data");
 const userRoutes = require("./routes/user");
 
@@ -19,6 +20,9 @@ mongoose
 
 const app = express();
 
+app.set('views', path.join(__dirname, 'views'))
+app.set("view engine", "ejs");
+
 app.use(express.json());
 
 app.use((req, res, next) => {
@@ -34,6 +38,7 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use("/", mainRoutes);
 app.use("/data", dataRoutes);
 app.use("/auth", userRoutes);
 app.use("/assets", express.static(path.join(__dirname, "assets")));
