@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const path = require("path");
+const helmet = require("helmet");
 
 const mainRoutes = require("./routes/main");
 const dataRoutes = require("./routes/data");
@@ -20,10 +21,13 @@ mongoose
 
 const app = express();
 
-app.set('views', path.join(__dirname, 'views'))
+app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 
+app.use(helmet());
+
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
