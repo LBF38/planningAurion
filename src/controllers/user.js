@@ -1,7 +1,6 @@
 const User = require("../models/User");
 const axios = require("axios");
 const apiURL = "https://formation.ensta-bretagne.fr/mobile";
-// const successPage = require("../views/success.html");
 
 exports.login = (req, res, next) => {
   getUserToken(req.body.username, req.body.password)
@@ -30,22 +29,18 @@ exports.getToken = (req, res, next) => {
   console.log("Getting token...");
   getUserToken(req.body.username, req.body.password)
     .then(() => {
-      // res.status(200).json({
-      //   message: "Token récupéré",
-      //   token: process.env.AURION_TOKEN,
-      // });
       console.log("Token sent");
-      // res.redirect("/views/success.html");
       res.render("success");
     })
     .catch((error) => {
-      // res.status(403).json({ error: error.message });
-      res.render("success");
-      // res.redirect("/views/success.html");
+      res.render("index", { error: error.message });
     });
 };
 
 async function getUserToken(username, password) {
+  if (!username || !password) {
+    throw new Error("Missing username or password");
+  }
   var config = {
     method: "POST",
     url: "/login",
@@ -58,7 +53,6 @@ async function getUserToken(username, password) {
   try {
     const response = await axios(config);
     process.env.AURION_TOKEN = response.data.normal;
-    // return process.env.AURION_TOKEN != null;
   } catch (error) {
     console.error(error);
     throw error;
