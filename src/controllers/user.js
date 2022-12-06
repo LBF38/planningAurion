@@ -11,14 +11,14 @@ exports.login = (req, res, next) => {
           if (user) {
             user.token = token;
             user.save();
-            res.render("/");
+            res.render("success", { user: user });
           } else {
             const user = new User({
               username: req.body.username,
               token: token,
             });
             user.save();
-            res.render("/");
+            res.render("success", { user: user });
           }
         })
         .catch((error) => res.status(400).json({ error }));
