@@ -6,9 +6,12 @@ const fs = require("fs");
 const { randomUUID } = require("crypto");
 const apiURL = "https://formation.ensta-bretagne.fr/mobile";
 
-
 exports.showPlanningForm = (req, res, next) => {
   res.render("planning");
+};
+
+exports.getICSLink = (req, res, next) => {
+  res.render("planning", { icsLink: "/assets/aurion.ics" });
 };
 
 exports.getPlanning = (req, res, next) => {
@@ -19,11 +22,13 @@ exports.getPlanning = (req, res, next) => {
       const icsMSG = convertToICS(calendar);
       writeICS(icsMSG);
       console.log("Planning sent");
-      res.redirect("/planning");
+      res.redirect("/planning/link");
     })
     .catch((error) => {
       // res.status(400).json({ error: error });
-      res.status(400).render("planning", { error: "Error retrieving planning" });
+      res
+        .status(400)
+        .render("planning", { error: "Error retrieving planning" });
       // res.status(400).redirect("/planning?start_date=" + req.body.start_date + "&end_date=" + req.body.end_date);
     });
 };
