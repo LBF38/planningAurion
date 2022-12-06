@@ -5,7 +5,7 @@ const path = require("path");
 const helmet = require("helmet");
 
 const mainRoutes = require("./routes/main");
-const dataRoutes = require("./routes/data");
+const planningRoutes = require("./routes/planning");
 const userRoutes = require("./routes/user");
 
 mongoose
@@ -43,7 +43,7 @@ app.use((req, res, next) => {
 });
 
 app.use("/", mainRoutes);
-app.use("/data", dataRoutes);
+app.use("/planning", planningRoutes);
 app.use("/auth", userRoutes);
 app.use("/assets", express.static(path.join(__dirname, "assets")));
 

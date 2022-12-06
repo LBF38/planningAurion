@@ -6,20 +6,25 @@ const fs = require("fs");
 const { randomUUID } = require("crypto");
 const apiURL = "https://formation.ensta-bretagne.fr/mobile";
 
+
+exports.showPlanningForm = (req, res, next) => {
+  res.render("planning");
+};
+
 exports.getPlanning = (req, res, next) => {
   console.log("Getting planning...");
-  getPlanning(req.body.startDate, req.body.endDate)
+  console.log(req.body);
+  getPlanning(req.body.start_date, req.body.end_date)
     .then((calendar) => {
       const icsMSG = convertToICS(calendar);
       writeICS(icsMSG);
-      res.status(200).json({
-        message: "Planning récupéré",
-        data: calendar, // should send a link to the ics file for download
-      });
       console.log("Planning sent");
+      res.redirect("/planning");
     })
     .catch((error) => {
-      res.status(400).json({ error: error });
+      // res.status(400).json({ error: error });
+      res.status(400).render("planning", { error: "Error retrieving planning" });
+      // res.status(400).redirect("/planning?start_date=" + req.body.start_date + "&end_date=" + req.body.end_date);
     });
 };
 

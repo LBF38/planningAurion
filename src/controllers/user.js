@@ -30,7 +30,7 @@ exports.getToken = (req, res, next) => {
   getUserToken(req.body.username, req.body.password)
     .then(() => {
       console.log("Token sent");
-      res.render("success");
+      res.redirect("/planning");
     })
     .catch((error) => {
       res.render("index", { error: error.message });

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <h1>Get the planning on the time period of your choice !</h1>
+    <p>
+      You are now connected ! You can choose how much of your planning you want
+      to get ! This is a first version of the tool. You can select the period
+      within the limits of the data accessible on Aurion. The tool will then
+      generate a link to download the ics file. You can then import it in your
+      favorite calendar app.
+    </p>
+    <form action="/planning/pull" method="post">
+      <label for="start_date">Start date : </label>
+      <input type="date" name="start_date" id="start_date" />
+      <label for="end_date">End date : </label>
+      <input type="date" name="end_date" id="end_date" />
+      <input type="submit" value="I want my planning !" />
+      <input type="reset" value="Oops, I want to reset my choices !" />
+    </form>
+    <% if(typeof error !== 'undefined') { %>
+    <p style="color: red">
+      Please provide valid dates. The start date must be before the end date.
+    </p>
+    <% } %>
+  </body>
+</html>
