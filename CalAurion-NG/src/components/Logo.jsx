@@ -6,7 +6,7 @@ const Logo = () => {
   return (
     <Box>
       <Link to="/">
-        <Box component="img" src="/static/icon_logo.png" alt="logo" />
+        <Box component="img" src="/static/orion_copie2.png" alt="logo" maxWidth="180px" />
       </Link>
     </Box>
   );

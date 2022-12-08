@@ -3,6 +3,8 @@ import { Link as RouterLink, useLocation, useNavigate } from "react-router-dom";
 import { Form, FormikProvider, useFormik } from "formik";
 import * as Yup from "yup";
 
+import {getUserToken} from "../controllers/user";
+
 import {
   Box,
   Checkbox,
@@ -33,6 +35,8 @@ const LoginForm = ({ setAuth }) => {
   const location = useLocation();
   const from = location.state?.from?.pathname || "/";
 
+  const cipher = require('cipher')(process.env.REACT_APP_CIPHER_SECRET);  // symmetric encryption for password
+
   const [showPassword, setShowPassword] = useState(false);
 
   const LoginSchema = Yup.object().shape({
@@ -52,9 +56,15 @@ const LoginForm = ({ setAuth }) => {
     onSubmit: () => {
       console.log("submitting...");
       setTimeout(() => {
+        let password = cipher.encrypt(getFieldProps("password").value);
+        let email = getFieldProps("email").value;
+        console.log("password: ", password);
+        console.log("real password: ", cipher.decrypt(password));
         console.log("submited!!");
         setAuth(true);
-        navigate(from, { replace: true });
+        getUserToken(email, password);
+        //setAuth(true);
+        //navigate(from, { replace: true });
       }, 2000);
     },
   });
