@@ -61,8 +61,8 @@ const LoginForm = ({ setAuth }) => {
         console.log("password: ", password);
         console.log("real password: ", cipher.decrypt(password));
         console.log("submited!!");
-        setAuth(true);
-        getUserToken(email, password);
+        //setAuth(true);
+        //getUserToken(email, password);
         //setAuth(true);
         //navigate(from, { replace: true });
       }, 2000);

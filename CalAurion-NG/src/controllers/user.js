@@ -3,6 +3,10 @@ const apiURL = "https://formation.ensta-bretagne.fr/mobile";
 
 let cipher = require("cipher")(process.env.REACT_APP_CIPHER_SECRET);
 
+export function getUsr(username, pswd){
+
+}
+
 export async function getUserToken(username, pswd) {
   let password = cipher.decrypt(pswd);
   if (!username || !password) {
@@ -19,7 +23,7 @@ export async function getUserToken(username, pswd) {
   };
   try {
     const response = await axios(config); //TODO: handle error 'axios is not a function'
-    process.env.REACT_APP_AURION_TOKEN = response.data.normal;
+    //process.env.REACT_APP_AURION_TOKEN = response.data.normal;
   } catch (error) {
     console.error(error);
     throw error;
