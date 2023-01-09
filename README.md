@@ -10,15 +10,17 @@ Ainsi, le calendrier dans notre application de calendrier (sur téléphone ou au
 Ce projet est principalement codé en JavaScript et utilise NodeJS.
 Pour lancer un script JS, utiliser la commande :
 
-```nodejs
+```bash
 node [nom fichier].js
 ```
 
 Pour lancer le serveur de développement, utiliser la commande :
 
-```nodejs
-npm run dev
+```bash
+pnpm run dev
 ```
+
+>Passage à `pnpm` plutôt que `npm` pour gérer les dépendances.
 
 Plus d'explications viendront plus tard dans le projet.
 
