@@ -1,10 +1,10 @@
-const express = require("express");
+import express from "express";
 const router = express.Router();
 
-const planningController = require("../controllers/planning");
+import planningController from "../controllers/planning";
 
 router.get("/form", planningController.showPlanningForm);
 router.post("/pull", planningController.getPlanning);
-router.get("/link", planningController.getICSLink); 
+router.get("/link", planningController.getICSLink);
 
-module.exports = router;
+export default router;

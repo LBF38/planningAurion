@@ -1,7 +1,7 @@
-const mongoose = require("mongoose");
-const uniqueValidator = require("mongoose-unique-validator");
+import mongoose from "mongoose";
+import uniqueValidator from "mongoose-unique-validator";
 
-const dataSchema = mongoose.Schema(
+const dataSchema = new mongoose.Schema(
   {
     userId: { type: String, required: true },
     calendarLink: { type: String, required: true, unique: true },
@@ -13,4 +13,4 @@ const dataSchema = mongoose.Schema(
 
 dataSchema.plugin(uniqueValidator);
 
-module.exports = mongoose.model("Data", dataSchema);
+export default mongoose.model("Data", dataSchema);

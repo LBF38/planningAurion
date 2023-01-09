@@ -5,4 +5,4 @@ import userController from "../controllers/user";
 
 router.post("/login", userController.getToken);
 
-module.exports = router;
+export default router;

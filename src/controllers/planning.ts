@@ -1,23 +1,23 @@
 require("dotenv/config");
-const Data = require("../models/data");
-const axios = require("axios");
-const moment = require("moment");
-const fs = require("fs");
-const { randomUUID } = require("crypto");
+import axios from "axios";
+import moment from "moment";
+import fs from "fs";
+import { randomUUID } from "crypto";
+import { NextFunction, Request, Response } from "express";
 const apiURL = "https://formation.ensta-bretagne.fr/mobile";
 
-exports.showPlanningForm = (req, res, next) => {
+function showPlanningForm(req: Request, res: Response, next: NextFunction) {
   res.render("planning");
-};
+}
 
-exports.getICSLink = (req, res, next) => {
+function getICSLink(req: Request, res: Response, next: NextFunction) {
   res.render("planning", { icsLink: "/assets/aurion.ics" });
-};
+}
 
-exports.getPlanning = (req, res, next) => {
+function getPlanning(req: Request, res: Response, next: NextFunction) {
   console.log("Getting planning...");
   console.log(req.body);
-  getPlanning(req.body.start_date, req.body.end_date)
+  _getPlanning(req.body.start_date, req.body.end_date)
     .then((calendar) => {
       const icsMSG = convertToICS(calendar);
       writeICS(icsMSG);
@@ -31,9 +31,12 @@ exports.getPlanning = (req, res, next) => {
         .render("planning", { error: "Error retrieving planning" });
       // res.status(400).redirect("/planning?start_date=" + req.body.start_date + "&end_date=" + req.body.end_date);
     });
-};
+}
 
-async function getPlanning(startDate, endDate) {
+async function _getPlanning(
+  startDate: moment.MomentInput,
+  endDate: moment.MomentInput
+) {
   try {
     var config = {
       method: "GET",
@@ -75,7 +78,7 @@ async function getPlanning(startDate, endDate) {
   }
 }
 
-function convertToICS(calendar) {
+function convertToICS(calendar: any[]) {
   console.log("Convert to ics ...");
   // Création du fichier ICS à partir des données récupérées
   let icsMSG = `BEGIN:VCALENDAR
@@ -104,7 +107,7 @@ END:VEVENT
   return icsMSG;
 }
 
-function writeICS(icsMSG) {
+function writeICS(icsMSG: string) {
   console.log("Write ics...");
   fs.writeFile("src/assets/aurion.ics", icsMSG, function (err) {
     if (err) {
@@ -113,3 +116,5 @@ function writeICS(icsMSG) {
   });
   console.log("ICS written");
 }
+
+export default { showPlanningForm, getPlanning, getICSLink };

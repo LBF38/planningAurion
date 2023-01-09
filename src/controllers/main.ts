@@ -1,4 +1,7 @@
+import { Request, Response, NextFunction } from "express";
 
-exports.index = (req, res, next) => {
+function index(req: Request, res: Response, next: NextFunction) {
   res.render("index");
-};
+}
+
+export default { index };

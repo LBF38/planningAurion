@@ -1,10 +1,14 @@
-const User = require("../models/User");
-const axios = require("axios");
+import User from "../models/User";
+import axios from "axios";
+import { NextFunction, Request, Response } from "express";
 const apiURL = "https://formation.ensta-bretagne.fr/mobile";
 
-exports.login = (req, res, next) => {
+function login(req: Request, res: Response, next: NextFunction) {
   getUserToken(req.body.username, req.body.password)
-    .then((token) => {
+    .then((token: string | void) => {
+      if (token === null || token === undefined) {
+        return res.status(400).json({ error: "Invalid username or password" });
+      }
       User.findOne({ username: req.body.username })
         .then((user) => {
           if (user) {
@@ -20,12 +24,12 @@ exports.login = (req, res, next) => {
             res.render("success", { user: user });
           }
         })
-        .catch((error) => res.status(400).json({ error }));
+        .catch((error: any) => res.status(400).json({ error }));
     })
     .catch((error) => res.status(400).json({ error }));
-};
+}
 
-exports.getToken = (req, res, next) => {
+function getToken(req: Request, res: Response, next: NextFunction) {
   console.log("Getting token...");
   getUserToken(req.body.username, req.body.password)
     .then(() => {
@@ -35,9 +39,9 @@ exports.getToken = (req, res, next) => {
     .catch((error) => {
       res.render("index", { error: error.message });
     });
-};
+}
 
-async function getUserToken(username, password) {
+async function getUserToken(username: String, password: String) {
   if (!username || !password) {
     throw new Error("Missing username or password");
   }
@@ -58,3 +62,5 @@ async function getUserToken(username, password) {
     throw error;
   }
 }
+
+export default { login, getToken };
