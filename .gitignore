@@ -5,3 +5,6 @@ aurion.ics
 .DS_Store
 
 CalAurion-NG/node_modules/
+
+# server build
+build/
