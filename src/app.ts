@@ -1,20 +1,16 @@
 require("dotenv").config();
-const express = require("express");
-const mongoose = require("mongoose");
-const path = require("path");
-const helmet = require("helmet");
+import express from "express";
+import mongoose from "mongoose";
+import path from "path";
+import helmet from "helmet";
 
-const mainRoutes = require("./routes/main");
-const planningRoutes = require("./routes/planning");
-const userRoutes = require("./routes/user");
+import mainRoutes from "./routes/main";
+import planningRoutes from "./routes/planning";
+import userRoutes from "./routes/user";
 
 mongoose
   .connect(
-    `mongodb+srv://${process.env.BDD_USERNAME}:${process.env.BDD_PASSWORD}@cluster.ztumyqi.mongodb.net/?retryWrites=true&w=majority`,
-    {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    }
+    `mongodb+srv://${process.env.BDD_USERNAME}:${process.env.BDD_PASSWORD}@cluster.ztumyqi.mongodb.net/?retryWrites=true&w=majority`
   )
   .then(() => console.log("Connexion à MongoDB réussie !"))
   .catch(() => console.log("Connexion à MongoDB échouée !"));
@@ -47,4 +43,4 @@ app.use("/planning", planningRoutes);
 app.use("/auth", userRoutes);
 app.use("/assets", express.static(path.join(__dirname, "assets")));
 
-module.exports = app;
+export default app;
