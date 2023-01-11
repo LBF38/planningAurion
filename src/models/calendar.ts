@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import uniqueValidator from "mongoose-unique-validator";
 
-const dataSchema = new mongoose.Schema(
+const userCalendarSchema = new mongoose.Schema(
   {
     userId: { type: String, required: true },
     calendarLink: { type: String, required: true, unique: true },
@@ -11,6 +11,6 @@ const dataSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-dataSchema.plugin(uniqueValidator);
+userCalendarSchema.plugin(uniqueValidator);
 
-export default mongoose.model("Data", dataSchema);
+export default mongoose.model("UserCalendar", userCalendarSchema);
