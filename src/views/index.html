@@ -20,13 +20,23 @@
           href="../static/css/mdb-custom.min.css"
           rel="stylesheet"
   />
-    <link href="../static/css/mdb.rtl-custom.min.css" rel="stylesheet" />
+  <link href="../static/css/mdb.rtl-custom.min.css" rel="stylesheet" />
 
+  <!-- MDB -->
+  <link
+          href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.1.0/mdb.min.css"
+          rel="stylesheet"
+  />
   <!-- MDB -->
   <script
           type="text/javascript"
-          src="../static/js/mdb.min.js"
+          src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.1.0/mdb.min.js"
   ></script>
+
+
+  <!-- MDB -->
+  <script type="text/javascript" src="../static/js/mdb.min.js"></script>
+  <script type="text/javascript" src="../static/js/mdb.free.js"></script>
   <!-- Bootstrap -->
   <link
           href="../static/css/bootstrap.min.css"
@@ -40,20 +50,30 @@
 <main class="my-5">
   <div class="container-fluid">
     <section class="team-section">
-      Aurion NG Calendar Utility
-      <div class="row text-center">
-        <div class="card classic-admin-card align-content-center">
+      <div class="container">
+        <div class="card profile-card">
           <!-- Card Data -->
-          <div class="admin-up align-content-center justify-content-start">
+          <div class="admin-up text-center">
+            <img src="../static/img/orion.png" class="img" height="150"/>
             <div class="data">
               <h5 class="font-weight-bold dark-grey-text"> Lorem ipsum title</h5>
             </div>
           </div>
           <!-- Card Data -->
           <!-- Card content -->
-            <div>
-                Lorem ipsum
-            </div>
+          <div class="card-body card-body-cascade">
+            <form action="/auth/login" method="post">
+              <div class="form-outline mb-4">
+                <input type="email" id="email" class="form-control">
+                <label class="form-label" for="email">Email</label>
+              </div>
+              <div class="form-outline mb-4">
+                <input type="password" id="password" class="form-control">
+                <label class="form-label" for="password">Password</label>
+              </div>
+              <button type="submit" class="btn btn-primary btn-block mb-4">Sign in</button>
+            </form>
+          </div>
         </div>
       </div>
     </section>
