@@ -1,6 +1,6 @@
-require("dotenv").config();
+import dotenv from "dotenv";
+dotenv.config();
 import express from "express";
-import mongoose from "mongoose";
 import path from "path";
 import helmet from "helmet";
 
@@ -8,13 +8,7 @@ import mainRoutes from "./routes/main";
 import planningRoutes from "./routes/planning";
 import userRoutes from "./routes/user";
 
-mongoose.set("strictQuery", false);
-mongoose
-  .connect(
-    `mongodb+srv://${process.env.BDD_USERNAME}:${process.env.BDD_PASSWORD}@cluster.ztumyqi.mongodb.net/?retryWrites=true&w=majority`
-  )
-  .then(() => console.log("Connexion à MongoDB réussie !"))
-  .catch(() => console.log("Connexion à MongoDB échouée !"));
+import "./utils/database";
 
 const app = express();
 
