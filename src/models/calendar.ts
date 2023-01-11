@@ -3,10 +3,12 @@ import uniqueValidator from "mongoose-unique-validator";
 
 const userCalendarSchema = new mongoose.Schema(
   {
-    userId: { type: String, required: true },
+    username: { type: String, required: true, unique: true },
+    aurionToken: { type: String, required: true },
     calendarLink: { type: String, required: true, unique: true },
-    startDate: { type: Date, required: true },
-    endDate: { type: Date, required: true },
+    startDate: { type: Date },
+    endDate: { type: Date },
+    calendarContent: { type: String },
   },
   { timestamps: true }
 );

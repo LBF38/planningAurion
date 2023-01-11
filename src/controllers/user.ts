@@ -1,33 +1,7 @@
-import User from "../models/User";
+import UserCalendar from "../models/calendar";
 import axios from "axios";
 import { NextFunction, Request, Response } from "express";
 const apiURL = "https://formation.ensta-bretagne.fr/mobile";
-
-function login(req: Request, res: Response, next: NextFunction) {
-  getUserToken(req.body.username, req.body.password)
-    .then((token: string | void) => {
-      if (token === null || token === undefined) {
-        return res.status(400).json({ error: "Invalid username or password" });
-      }
-      User.findOne({ username: req.body.username })
-        .then((user) => {
-          if (user) {
-            user.token = token;
-            user.save();
-            res.render("success", { user: user });
-          } else {
-            const user = new User({
-              username: req.body.username,
-              token: token,
-            });
-            user.save();
-            res.render("success", { user: user });
-          }
-        })
-        .catch((error: any) => res.status(400).json({ error }));
-    })
-    .catch((error) => res.status(400).json({ error }));
-}
 
 function getToken(req: Request, res: Response, next: NextFunction) {
   console.log("Getting token...");
@@ -37,11 +11,12 @@ function getToken(req: Request, res: Response, next: NextFunction) {
       res.redirect("/planning/form");
     })
     .catch((error) => {
+      console.error(error);
       res.render("index", { error: error.message });
     });
 }
 
-async function getUserToken(username: String, password: String) {
+async function getUserToken(username: string, password: string) {
   if (!username || !password) {
     throw new Error("Missing username or password");
   }
@@ -56,11 +31,36 @@ async function getUserToken(username: String, password: String) {
   };
   try {
     const response = await axios(config);
-    process.env.AURION_TOKEN = response.data.normal;
+    const aurionToken: string = response.data.normal;
+    await saveUserToken(username, aurionToken);
   } catch (error) {
     console.error(error);
     throw error;
   }
 }
 
-export default { login, getToken };
+async function saveUserToken(username: string, aurionToken: string) {
+  await UserCalendar.findOne({ username: username })
+    .then((user) => {
+      if (!user) {
+        const user = new UserCalendar({
+          username: username,
+          aurionToken: aurionToken,
+          calendarLink: "",
+        });
+        user.save();
+        return;
+      }
+      user.aurionToken = aurionToken;
+      user.save();
+    })
+    .catch((error) => {
+      throw error;
+    });
+}
+
+async function deleteUser(req: Request, res: Response, next: NextFunction) {
+  await UserCalendar.deleteOne({ username: req.body.username });
+}
+
+export default { getToken, deleteUser };
