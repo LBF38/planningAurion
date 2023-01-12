@@ -8,3 +8,6 @@ CalAurion-NG/node_modules/
 
 # server build
 build/
+
+# testing
+coverage/
