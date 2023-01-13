@@ -4,38 +4,73 @@ import moment from "moment";
 import fs from "fs";
 import { randomUUID } from "crypto";
 import { NextFunction, Request, Response } from "express";
+import UserCalendar from "../models/calendar";
 
 class PlanningController {
   apiURL: string = "https://formation.ensta-bretagne.fr/mobile";
+  username: string = "";
 
   showPlanningForm(req: Request, res: Response, next: NextFunction) {
+    this.username = req.body.username;
     res.render("planning");
   }
 
-  getICSLink(req: Request, res: Response, next: NextFunction) {
-    res.render("planning", { icsLink: "/assets/aurion.ics" });
+  async getICSLink(req: Request, res: Response, next: NextFunction) {
+    const username: string = req.body.username;
+    if (!username) {
+      res.status(400).render("planning", { error: "Missing username" });
+    }
+    try {
+      const link: string = await UserCalendar.findOne({ username }).then(
+        (userCalendar) => {
+          if (!userCalendar) {
+            throw new Error("User not found");
+          }
+          return userCalendar.calendarLink;
+        }
+      );
+      res.render("planning", { icsLink: link });
+    } catch (error: any) {
+      res.status(400).render("planning", { error: error.message });
+    }
   }
 
-  getPlanning(req: Request, res: Response, next: NextFunction) {
+  async getPlanning(req: Request, res: Response, next: NextFunction) {
     console.log("Getting planning...");
     console.log(req.body);
-    this._getPlanning(req.body.start_date, req.body.end_date)
+    const username: string = req.body.username;
+    if (!username) {
+      res
+        .status(400)
+        .render("planning", { error: "Missing username parameter" });
+    }
+    const userCalendar = await UserCalendar.findOne({ username }).then(
+      (user) => {
+        if (!user) {
+          throw new Error("User not found");
+        }
+        return user;
+      }
+    );
+    const aurionToken: string = userCalendar.aurionToken;
+    const icsLink: string = userCalendar.calendarLink;
+
+    this._getPlanning(aurionToken, req.body.start_date, req.body.end_date)
       .then((calendar) => {
         const icsMSG = this.convertToICS(calendar);
-        this.writeICS(icsMSG);
+        this.writeICS(icsMSG, icsLink);
         console.log("Planning sent");
         res.redirect("/planning/link");
       })
       .catch((error) => {
-        // res.status(400).json({ error: error });
-        res
-          .status(400)
-          .render("planning", { error: "Error retrieving planning" });
-        // res.status(400).redirect("/planning?start_date=" + req.body.start_date + "&end_date=" + req.body.end_date);
+        res.status(400).render("planning", {
+          error: `Error retrieving planning :${error.message}`,
+        });
       });
   }
 
   async _getPlanning(
+    aurionToken: string,
     startDate: moment.MomentInput,
     endDate: moment.MomentInput
   ) {
@@ -45,7 +80,7 @@ class PlanningController {
         url: "/mon_planning",
         baseURL: this.apiURL,
         headers: {
-          Authorization: "Bearer " + process.env.AURION_TOKEN,
+          Authorization: `Bearer ${aurionToken}`,
         },
         params: {
           date_debut: moment(startDate).format("YYYY-MM-DD"),
@@ -109,14 +144,14 @@ class PlanningController {
     return icsMSG;
   }
 
-  writeICS(icsMSG: string) {
+  writeICS(icsMSG: string, icsLink: string) {
     console.log("Write ics...");
-    fs.writeFile("src/assets/aurion.ics", icsMSG, function (err) {
+    fs.writeFile(icsLink, icsMSG, function (err) {
       if (err) {
-        return console.log(err);
+        throw err;
       }
     });
     console.log("ICS written");
   }
 }
-export default PlanningController;
+export default new PlanningController();

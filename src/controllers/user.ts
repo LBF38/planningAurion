@@ -1,6 +1,8 @@
 import UserCalendar from "../models/calendar";
 import axios from "axios";
 import { NextFunction, Request, Response } from "express";
+import { randomUUID } from "crypto";
+
 class UserController {
   apiURL = "https://formation.ensta-bretagne.fr/mobile";
 
@@ -9,7 +11,7 @@ class UserController {
     this.getUserToken(req.body.username, req.body.password)
       .then(() => {
         console.log("Token sent");
-        res.redirect("/planning/form");
+        res.json({ username: req.body.username }).redirect("/planning/form");
       })
       .catch((error) => {
         console.error(error);
@@ -47,7 +49,7 @@ class UserController {
           const user = new UserCalendar({
             username: username,
             aurionToken: aurionToken,
-            calendarLink: "",
+            calendarLink: `/assets/${randomUUID()}/calendar.ics`,
           });
           user.save();
           return;
@@ -60,9 +62,19 @@ class UserController {
       });
   }
 
+  async getUser(req: Request, res: Response, next: NextFunction) {
+    await UserCalendar.findOne({ username: req.body.username }).then((user) => {
+      if (!user) {
+        res.status(404).json({ error: "User not found" });
+        return;
+      }
+      res.status(200).json(user);
+    });
+  }
+
   async deleteUser(req: Request, res: Response, next: NextFunction) {
     await UserCalendar.deleteOne({ username: req.body.username });
   }
 }
 
-export default UserController;
+export default new UserController();
