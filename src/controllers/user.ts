@@ -2,7 +2,6 @@ import User from "../models/User";
 import axios from "axios";
 import { NextFunction, Request, Response } from "express";
 const apiURL = "https://formation.ensta-bretagne.fr/mobile";
-const cipher = require('cipher')(process.env.CIPHER_SECRET);  // symmetric encryption for password
 
 function login(req: Request, res: Response, next: NextFunction) {
     getUserToken(req.body.username, req.body.password)

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Security-Policy" content="default-src *; style-src * 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Font Awesome -->
+  <link
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+          rel="stylesheet"
+  />
+  <!-- Google Fonts -->
+  <link
+          href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+          rel="stylesheet"
+  />
+  <!-- MDB -->
+  <link href="../static/css/mdb-custom.min.css" rel="stylesheet"/>
+  <link href="../static/css/mdb.rtl-custom.min.css" rel="stylesheet" />
+
+  <!-- Bootstrap -->
+  <link href="../static/css/bootstrap.min.css" rel="stylesheet"/>
+
+  <title>Aurion Synchronizer | Planning</title>
+</head>
+
+<main class="my-5">
+  <!-- Download OK alert -->
+  <%if(typeof icsLink !== 'undefined') {%>
+  <div class="alert alert-success mb-3 alert-absolute"
+       id="dl-ok" role="alert" data-mdb-color="secondary"
+       style="padding-left: .5rem; margin: 6%">
+    <i class="fas fa-calendar-check me-2"></i>
+    Your planning is ready!
+    <a href="<%=icsLink%>">Click here</a> to download it.
+  </div>
+  <%}%>
+  <!-- Download OK alert -->
+
+  <div class="container-fluid">
+    <section class="team-section">
+      <div class="container">
+        <!-- Card -->
+        <div class="card user-card">
+          <!-- Card content -->
+          <div class="card-body card-body-cascade">
+            <% if(typeof error !== 'undefined') { %>
+
+            <!-- input alert -->
+            <div class="alert alert-danger mb-3 alert-absolute"
+                 id="alert" role="alert" data-mdb-color="secondary"
+                 style="padding-left: .5rem;">
+              <i class="fas fa-calendar-xmark me-2"></i>
+              Start date must be before end date
+            </div>
+            <!-- input alert -->
+            <%}%>
+
+            <form action="/planning/pull" method="post" id="login-form" name="login-form">
+              <fieldset>
+                <legend>
+                  Chose dates to retrieve your planning
+                </legend>
+                <div class="row mb-5">
+                  <div class="col">
+                    <div class="form-outline">
+                      <label for="start_date">Start date</label>
+                      <input type="date" name="start_date" id="start_date" class="form-control"/>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <div class="form-outline">
+                      <label for="end_date">End date</label>
+                      <input type="date" name="end_date" id="end_date" class="form-control"/>
+                    </div>
+                  </div>
+                </div>
+                <!--
+                <div class="form-outline mb-4">
+                  <input type="email" name="username" id="username" class="form-control">
+                  <label class="form-label" for="username">Email</label>
+                </div>
+                <div class="form-outline mb-4">
+                  <input type="password" name="password" id="password" class="form-control">
+                  <label class="form-label" for="password">Password</label>
+                </div>
+  -->
+                <button type="submit" class="btn btn-primary btn-block mb-3">Confirm</button>
+                <button type="reset" class="btn btn-action btn-block mb-2">Reset</button>
+              </fieldset>
+            </form>
+          </div>
+          <!-- Card content -->
+        </div>
+        <!-- Card -->
+
+      </div>
+    </section>
+  </div>
+</main>
+
+
+
+<!--
+  <body>
+    <h1>Get the planning on the time period of your choice !</h1>
+    <p>
+      You are now connected ! You can choose how much of your planning you want
+      to get ! This is a first version of the tool. You can select the period
+      within the limits of the data accessible on Aurion. The tool will then
+      generate a link to download the ics file. You can then import it in your
+      favorite calendar app.
+    </p>
+    <form action="/planning/pull" method="post">
+      <fieldset>
+        <legend>
+          Choose the desired date for retrieving your planning events !
+        </legend>
+        <label for="start_date">Start date : </label>
+        <input type="date" name="start_date" id="start_date" />
+        <label for="end_date">End date : </label>
+        <input type="date" name="end_date" id="end_date" />
+        <input type="submit" value="I want my planning !" />
+        <input type="reset" value="Oops, I want to reset my choices !" />
+        <% if(typeof error !== 'undefined') { %>
+        <p style="color: red">
+          Please provide valid dates. The start date must be before the end
+          date.
+        </p>
+        <% } %>
+      </fieldset>
+    </form>
+
+    <%if(typeof icsLink !== 'undefined') {%>
+    <h1>Download your planning !</h1>
+    <p>
+      Here is the link to download your planning :
+      <a href="<%=icsLink%>">Download</a>
+    </p>
+    <%}%>
+  </body>
+-->
+</html>
