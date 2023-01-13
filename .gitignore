@@ -9,5 +9,7 @@ CalAurion-NG/node_modules/
 # server build
 build/
 
+CalAurion-NG/
+
 # testing
 coverage/

@@ -1,5 +1,4 @@
-// BOOTSTRAP CORE COMPONENTS
-import Button from './free/button';
+import Button from './free/button.js';
 import Collapse from './bootstrap/mdb-prefix/collapse';
 import Alert from './free/alert';
 import Carousel from './free/carousel';
@@ -10,11 +9,12 @@ import Tab from './free/tab';
 import Tooltip from './free/tooltip';
 import Toast from './free/toast';
 
-// MDB FREE COMPONENTS
 import Input from './free/input';
 import Dropdown from './free/dropdown';
 import Ripple from './free/ripple';
 import Range from './free/range';
+
+
 
 export {
   Alert,
