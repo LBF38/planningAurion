@@ -29,17 +29,20 @@
 </head>
 <body class="fixed-sn grey-skin">
 
-<main class="my-5">
+<main class="my-5" style="padding-top: 2%">
   <!-- Wrong password alert -->
+<% if (typeof error !== 'undefined') { %>
   <div class="alert alert-danger mb-0 alert-absolute"
        id="alert" role="alert" data-mdb-color="secondary"
-       style="padding-left: .5rem; margin: 1.5rem; display: none">
+       style="padding-left: .5rem; margin: 3.5rem">
     <i class="fas fa-exclamation-circle me-2"></i>
     Le mot de passe est incorrect. Merci de le vérifier.
   </div>
+    <% } %>
+
   <!-- Wrong password alert -->
 
-  <div class="container-fluid" style="margin-top: -4rem">
+  <div class="container-fluid" style="margin-top: 0rem">
     <section class="team-section">
       <div class="container">
         <!-- Card -->
