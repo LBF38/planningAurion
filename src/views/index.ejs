@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Security-Policy" content="default-src *; style-src * 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <!-- Font Awesome -->
@@ -16,45 +17,61 @@
           rel="stylesheet"
   />
   <!-- MDB -->
-  <link
-          href="../static/css/mdb-custom.min.css"
-          rel="stylesheet"
-  />
-    <link href="../static/css/mdb.rtl-custom.min.css" rel="stylesheet" />
+  <link href="/css/mdb-custom.min.css" rel="stylesheet"/>
+  <link href="/css/mdb.rtl-custom.min.css" rel="stylesheet" />
 
-  <!-- MDB -->
-  <script
-          type="text/javascript"
-          src="../static/js/mdb.min.js"
-  ></script>
+
+
   <!-- Bootstrap -->
-  <link
-          href="../static/css/bootstrap.min.css"
-          rel="stylesheet"
-  />
+  <link href="/css/bootstrap.min.css" rel="stylesheet"/>
 
   <title>AURION Planning Synchronizer</title>
 </head>
 <body class="fixed-sn grey-skin">
 
 <main class="my-5">
-  <div class="container-fluid">
+  <!-- Wrong password alert -->
+  <div class="alert alert-danger mb-0 alert-absolute"
+       id="alert" role="alert" data-mdb-color="secondary"
+       style="padding-left: .5rem; margin: 1.5rem; display: none">
+    <i class="fas fa-exclamation-circle me-2"></i>
+    Le mot de passe est incorrect. Merci de le vérifier.
+  </div>
+  <!-- Wrong password alert -->
+
+  <div class="container-fluid" style="margin-top: -4rem">
     <section class="team-section">
-      Aurion NG Calendar Utility
-      <div class="row text-center">
-        <div class="card classic-admin-card align-content-center">
+      <div class="container">
+        <!-- Card -->
+        <div class="card profile-card">
           <!-- Card Data -->
-          <div class="admin-up align-content-center justify-content-start">
+          <div class="admin-up text-center">
+            <img src="/img/orion.png" class="img" height="150"
+                 style="margin-top: -5rem; margin-bottom: 2%"/>
             <div class="data">
-              <h5 class="font-weight-bold dark-grey-text"> Lorem ipsum title</h5>
+              <h5 class="font-weight-bold dark-grey-text">Entrez vos identifiants Aurion</h5>
+              <p class="text-muted">Pas de panique, ils ne sont pas enregistrés !</p>
+
             </div>
           </div>
           <!-- Card Data -->
           <!-- Card content -->
-            <div>
-                Lorem ipsum
-            </div>
+          <div class="card-body card-body-cascade">
+            <form action="/auth/login" method="post" id="login-form" name="login-form">
+              <div class="form-outline mb-4">
+                <input type="email" name="username" id="username" class="form-control">
+                <label class="form-label" for="username">Email</label>
+              </div>
+              <div class="form-outline mb-4">
+                <input type="password" name="password" id="password" class="form-control">
+                <label class="form-label" for="password">Password</label>
+              </div>
+              <button type="submit" class="btn btn-primary btn-block mb-4">Sign in</button>
+            </form>
+          </div>
+          <!-- Card content -->
         </div>
+        <!-- Card -->
       </div>
     </section>
   </div>
