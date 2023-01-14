@@ -1,34 +1,47 @@
-require('dotenv').config();
-const moment = require('moment');
-var axios = require('axios');
-var start = moment("2022-10-01");
-var end = moment("2022-10-31");
-var calendarResponse;
+require("dotenv").config();
+import express from "express";
+import mongoose from "mongoose";
+import path from "path";
+import helmet from "helmet";
 
-// var data = JSON.stringify({
-//   "params": {
-//     "date_debut": start.format("YYYY-MM-DD"),
-//     "date_fin": end.format("YYYY-MM-DD"),
-//   }
-// });
+import mainRoutes from "./routes/main";
+import planningRoutes from "./routes/planning";
+import userRoutes from "./routes/user";
 
-var config = {
-  method: 'GET',
-  url: 'https://formation.ensta-bretagne.fr/mobile/mon_planning',
-  headers: {
-    'Authorization': 'Bearer ' + process.env.AURION_TOKEN,
-    // 'Content-Type': 'application/json',
-  },
-  params: {
-    "date_debut": start.format("YYYY-MM-DD"),
-    "date_fin": end.format("YYYY-MM-DD"),
-  },
-};
+mongoose
+  .connect(
+    `mongodb+srv://${process.env.BDD_USERNAME}:${process.env.BDD_PASSWORD}@cluster.ztumyqi.mongodb.net/?retryWrites=true&w=majority`
+  )
+  .then(() => console.log("Connexion à MongoDB réussie !"))
+  .catch(() => console.log("Connexion à MongoDB échouée !"));
 
-axios(config)
-  .then(function (response) {
-    console.log(JSON.stringify(response.data));
-  })
-  .catch(function (error) {
-    console.log(error);
-  });
+const app = express();
+
+app.set("views", path.join(__dirname, "views"));
+app.set("view engine", "ejs");
+
+app.use(helmet());
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, "/static")));
+
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content, Accept, Content-Type, Authorization"
+  );
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, DELETE, PATCH, OPTIONS"
+  );
+  next();
+});
+
+app.use("/", mainRoutes);
+app.use("/planning", planningRoutes);
+app.use("/auth", userRoutes);
+app.use("/assets", express.static(path.join(__dirname, "assets")));
+
+export default app;
