@@ -7,22 +7,35 @@ Ainsi, le calendrier dans notre application de calendrier (sur téléphone ou au
 
 ## Installation
 
-Ce projet est principalement codé en JavaScript et utilise NodeJS.
+Ce projet est principalement codé en TypeScript et utilise NodeJS.
 Pour lancer un script JS, utiliser la commande :
 
 ```bash
 node [nom fichier].js
 ```
 
+Pour lancer un script TypeScript, utiliser la commande :
+
+```bash
+ts-node [nom fichier].ts
+```
+
 Pour lancer le serveur de développement, utiliser la commande :
+
+```bash
+pnpm dev
+```
+
+ou
 
 ```bash
 pnpm run dev
 ```
 
->Passage à `pnpm` plutôt que `npm` pour gérer les dépendances.
+> **Note**
+> Passage à `pnpm` plutôt que `npm` pour gérer les dépendances.
 
-Plus d'explications viendront plus tard dans le projet.
+*Plus d'explications viendront plus tard dans le projet.*
 
 ## Roadmap
 
@@ -35,15 +48,15 @@ Plus d'explications viendront plus tard dans le projet.
   - [ ] Génération d'un lien automatique pour synchronisation avec calendrier
   - [x] Gérer les erreurs ou alerter si problème.
 - [ ] Frontend
-  - [ ] Site internet simple et facile d'utilisation
-  - [ ] Interface de login de base (pour connexion ENSTA B)
-    - [ ] username
-    - [ ] password
+  - [x] Site internet simple et facile d'utilisation
+  - [x] Interface de login de base (pour connexion ENSTA B)
+    - [x] username
+    - [x] password
   - [ ] Passage à interface pour récup calendrier
-    - [ ] V1
-      - [ ] paramétrage des dates de la période à prendre
-      - [ ] Interface pour visualisation des changements
-      - [ ] Lien de téléchargement du fichier ics
+    - [x] V1
+      - [x] paramétrage des dates de la période à prendre
+      - [x] Interface pour visualisation des changements
+      - [x] Lien de téléchargement du fichier ics
     - [ ] V2
       - [ ] Lien de synchronisation directement
         - [ ] la synchro se fait automatiquement en backend avec le calendrier de l'utilisateur (que le calendrier soit : google calendar, outlook, apple calendar, ...)
