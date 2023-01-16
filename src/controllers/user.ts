@@ -2,6 +2,7 @@ import UserCalendar from "../models/calendar";
 import axios from "axios";
 import { NextFunction, Request, Response } from "express";
 import { randomUUID } from "crypto";
+import { Model, Schema } from "mongoose";
 
 // function login(req: Request, res: Response, next: NextFunction) {
 //   getUserToken(req.body.username, req.body.password)
@@ -91,13 +92,12 @@ async function _saveUserToken(username: string, aurionToken: string) {
     });
 }
 
-async function getUser(req: Request, res: Response, next: NextFunction) {
-  await UserCalendar.findOne({ username: req.body.username }).then((user) => {
+async function getUser(username: string) {
+  return await UserCalendar.findOne({ username: username }).then((user) => {
     if (!user) {
-      res.status(404).json({ error: "User not found" });
-      return;
+      throw new Error("User not found");
     }
-    res.status(200).json(user);
+    return user;
   });
 }
 

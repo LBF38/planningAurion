@@ -2,15 +2,16 @@ require("dotenv/config");
 import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import UserController from "../src/controllers/user";
+import UserCalendar from "../src/models/calendar";
 import { request, response } from "express";
 
 describe("save database", () => {
   let mongoServer: MongoMemoryServer;
-  let userController = new UserController();
   beforeAll(async () => {
     mongoServer = await MongoMemoryServer.create();
     mongoose.set("strictQuery", false);
     await mongoose.connect(mongoServer.getUri());
+    console.log(mongoose.connection.readyState);
   });
 
   beforeEach(async () => {
@@ -23,13 +24,19 @@ describe("save database", () => {
   });
 
   it("should save a user", async () => {
-    await userController._saveUserToken("my_username", "my_aurion_token");
-  });
-
-  it("should get the user token", async () => {
-    request.body.username = "my_username";
-    const user = await userController.getUser(request, response, null);
-    expect(user).toBeDefined();
-    // Pour résoudre mon erreur, faire un return dans la fonction _getUserToken.
+    const user = new UserCalendar({
+      username: "my_username",
+      aurionToken: "my_token",
+      calendarLink: "/assets/my_calendar.ics",
+    });
+    await user.save();
+    console.log(user);
+    console.log(await UserCalendar.find({}));
+    const userFound = await UserController.getUser(user.username);
+    console.log(userFound);
+    expect(userFound).toBeDefined();
+    expect(userFound.username).toEqual(user.username);
+    expect(userFound.aurionToken).toEqual(user.aurionToken);
+    expect(userFound.calendarLink).toEqual(user.calendarLink);
   });
 });
