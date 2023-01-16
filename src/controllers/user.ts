@@ -6,11 +6,14 @@ import { randomUUID } from "crypto";
 class UserController {
   apiURL = "https://formation.ensta-bretagne.fr/mobile";
 
+  constructor() {}
+
   getToken(req: Request, res: Response, next: NextFunction) {
     console.log("Getting token...");
-    this.getUserToken(req.body.username, req.body.password)
+    this._getUserToken(req.body.username, req.body.password)
       .then(() => {
         console.log("Token sent");
+        console.log(req.body.username);
         res.json({ username: req.body.username }).redirect("/planning/form");
       })
       .catch((error) => {
@@ -19,7 +22,7 @@ class UserController {
       });
   }
 
-  async getUserToken(username: string, password: string) {
+  async _getUserToken(username: string, password: string) {
     if (!username || !password) {
       throw new Error("Missing username or password");
     }
@@ -35,27 +38,29 @@ class UserController {
     try {
       const response = await axios(config);
       const aurionToken: string = response.data.normal;
-      await this.saveUserToken(username, aurionToken);
+      console.log("Token received");
+      return this._saveUserToken(username, aurionToken);
     } catch (error) {
       console.error(error);
       throw error;
     }
   }
 
-  async saveUserToken(username: string, aurionToken: string) {
+  async _saveUserToken(username: string, aurionToken: string) {
     await UserCalendar.findOne({ username: username })
-      .then((user) => {
+      .then(async (user) => {
         if (!user) {
           const user = new UserCalendar({
             username: username,
             aurionToken: aurionToken,
             calendarLink: `/assets/${randomUUID()}/calendar.ics`,
           });
-          user.save();
-          return;
+          await user.save();
+          return user.aurionToken;
         }
         user.aurionToken = aurionToken;
-        user.save();
+        await user.save();
+        return user.aurionToken;
       })
       .catch((error) => {
         throw error;
@@ -77,4 +82,4 @@ class UserController {
   }
 }
 
-export default new UserController();
+export default UserController;
