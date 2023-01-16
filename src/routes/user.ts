@@ -1,9 +1,8 @@
 import express from "express";
 import UserController from "../controllers/user";
 const router = express.Router();
-const _userController = new UserController();
 
-router.post("/login", _userController.getToken);
-router.delete("/delete", _userController.deleteUser);
+router.post("/login", UserController.getToken);
+router.delete("/delete", UserController.deleteUser);
 
 export default router;

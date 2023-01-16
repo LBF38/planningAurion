@@ -3,8 +3,6 @@ import axios from "axios";
 import { NextFunction, Request, Response } from "express";
 import { randomUUID } from "crypto";
 
-const apiURL = "https://formation.ensta-bretagne.fr/mobile";
-
 // function login(req: Request, res: Response, next: NextFunction) {
 //   getUserToken(req.body.username, req.body.password)
 //     .then((token: string | void) => {
@@ -31,19 +29,22 @@ const apiURL = "https://formation.ensta-bretagne.fr/mobile";
 //     .catch((error) => res.status(400).json({ error }));
 // }
 
+const apiURL = "https://formation.ensta-bretagne.fr/mobile";
 function getToken(req: Request, res: Response, next: NextFunction) {
   console.log("Getting token...");
-  getUserToken(req.body.username, req.body.password)
+  _getUserToken(req.body.username, req.body.password)
     .then(() => {
       console.log("Token sent");
-      res.redirect("/planning/form");
+      console.log(req.body.username);
+      res.json({ username: req.body.username }).redirect("/planning/form");
     })
     .catch((error) => {
+      console.error(error);
       res.render("index", { error: error.message });
     });
 }
 
-async function getUserToken(username: String, password: String) {
+async function _getUserToken(username: string, password: string) {
   if (!username || !password) {
     throw new Error("Missing username or password");
   }
@@ -58,11 +59,48 @@ async function getUserToken(username: String, password: String) {
   };
   try {
     const response = await axios(config);
-    process.env.AURION_TOKEN = response.data.normal;
+    const aurionToken: string = response.data.normal;
+    console.log("Token received");
+    return _saveUserToken(username, aurionToken);
   } catch (error) {
     console.error(error);
     throw error;
   }
 }
 
-export default { getToken, getUserToken };
+async function _saveUserToken(username: string, aurionToken: string) {
+  await UserCalendar.findOne({ username: username })
+    .then(async (user) => {
+      if (!user) {
+        const user = new UserCalendar({
+          username: username,
+          aurionToken: aurionToken,
+          calendarLink: `/assets/${randomUUID()}/calendar.ics`,
+        });
+        await user.save();
+        return user.aurionToken;
+      }
+      user.aurionToken = aurionToken;
+      await user.save();
+      return user.aurionToken;
+    })
+    .catch((error) => {
+      throw error;
+    });
+}
+
+async function getUser(req: Request, res: Response, next: NextFunction) {
+  await UserCalendar.findOne({ username: req.body.username }).then((user) => {
+    if (!user) {
+      res.status(404).json({ error: "User not found" });
+      return;
+    }
+    res.status(200).json(user);
+  });
+}
+
+async function deleteUser(req: Request, res: Response, next: NextFunction) {
+  await UserCalendar.deleteOne({ username: req.body.username });
+}
+
+export default { getToken, getUser, deleteUser };
