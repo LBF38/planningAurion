@@ -3,6 +3,7 @@ dotenv.config();
 import express from "express";
 import path from "path";
 import helmet from "helmet";
+import cookieParser from "cookie-parser";
 
 import mainRoutes from "./routes/main";
 import planningRoutes from "./routes/planning";
@@ -16,6 +17,7 @@ app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 
 app.use(helmet());
+app.use(cookieParser());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

@@ -30,13 +30,15 @@ import { randomUUID } from "crypto";
 // }
 
 const apiURL = "https://formation.ensta-bretagne.fr/mobile";
+
 function getToken(req: Request, res: Response, next: NextFunction) {
   console.log("Getting token...");
   _getUserToken(req.body.username, req.body.password)
     .then(() => {
       console.log("Token sent");
       console.log(req.body.username);
-      res.json({ username: req.body.username }).redirect("/planning/form");
+      res.cookie("username", req.body.username, { httpOnly: true });
+      res.redirect("/planning/form");
     })
     .catch((error) => {
       console.error(error);

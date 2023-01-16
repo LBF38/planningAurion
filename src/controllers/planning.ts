@@ -9,7 +9,7 @@ import UserCalendar from "../models/calendar";
 const apiURL: string = "https://formation.ensta-bretagne.fr/mobile";
 
 function showPlanningForm(req: Request, res: Response, next: NextFunction) {
-  res.render("planning");
+  res.render("planning", { username: req.cookies["username"] });
 }
 
 async function getICSLink(req: Request, res: Response, next: NextFunction) {
