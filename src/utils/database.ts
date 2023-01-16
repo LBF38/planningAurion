@@ -4,6 +4,7 @@ const debug = require("debug")("utils:database");
 if (!process.env.MONGODB_URL)
   throw new Error("MONGODB_URL is not defined in .env file");
 
+mongoose.set("strictQuery", false);
 mongoose.connect(process.env.MONGODB_URL);
 
 const database = mongoose.connection;
