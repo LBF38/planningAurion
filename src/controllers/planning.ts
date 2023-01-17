@@ -1,39 +1,69 @@
 require("dotenv/config");
 import axios from "axios";
+import path from "path";
 import moment from "moment";
 import fs from "fs";
 import { randomUUID } from "crypto";
 import { NextFunction, Request, Response } from "express";
-const apiURL = "https://formation.ensta-bretagne.fr/mobile";
+import UserCalendar from "../models/calendar";
+
+const apiURL: string = "https://formation.ensta-bretagne.fr/mobile";
 
 function showPlanningForm(req: Request, res: Response, next: NextFunction) {
-  res.render("planning");
+  res.render("planning", { username: req.cookies.username });
 }
 
-function getICSLink(req: Request, res: Response, next: NextFunction) {
-  res.render("planning", { icsLink: "/assets/aurion.ics" });
+async function getICSLink(req: Request, res: Response, next: NextFunction) {
+  const username: string = req.cookies.username;
+  if (!username) {
+    return res.status(400).render("planning", { error: "Missing username" });
+  }
+  try {
+    const calendarLink: string = await UserCalendar.findOne({
+      username: username,
+    }).then((userCalendar) => {
+      if (!userCalendar) {
+        throw new Error("User not found");
+      }
+      return userCalendar.calendarLink;
+    });
+    res.render("planning", { icsLink: `/assets/${calendarLink}` });
+  } catch (error: any) {
+    res.status(400).render("planning", { error: error.message });
+  }
 }
 
-function getPlanning(req: Request, res: Response, next: NextFunction) {
+async function getPlanning(req: Request, res: Response, next: NextFunction) {
   console.log("Getting planning...");
   console.log(req.body);
-  _getPlanning(req.body.start_date, req.body.end_date)
+  const username: string = req.cookies.username;
+  console.log(username);
+  console.log(req.cookies.username);
+  if (username === undefined || username === null) {
+    return res
+      .status(400)
+      .render("planning", { error: "Missing username parameter" });
+  }
+  const userCalendar = await UserCalendar.findOne({ username: username });
+  const aurionToken: string = userCalendar!.aurionToken;
+  const icsLink: string = userCalendar!.calendarLink;
+
+  _getPlanning(aurionToken, req.body.start_date, req.body.end_date)
     .then((calendar) => {
       const icsMSG = convertToICS(calendar);
-      writeICS(icsMSG);
+      writeICS(icsMSG, icsLink);
       console.log("Planning sent");
       res.redirect("/planning/link");
     })
     .catch((error) => {
-      // res.status(400).json({ error: error });
-      res
-        .status(400)
-        .render("planning", { error: "Error retrieving planning" });
-      // res.status(400).redirect("/planning?start_date=" + req.body.start_date + "&end_date=" + req.body.end_date);
+      res.status(400).render("planning", {
+        error: `Error retrieving planning :${error.message}`,
+      });
     });
 }
 
 async function _getPlanning(
+  aurionToken: string,
   startDate: moment.MomentInput,
   endDate: moment.MomentInput
 ) {
@@ -43,7 +73,7 @@ async function _getPlanning(
       url: "/mon_planning",
       baseURL: apiURL,
       headers: {
-        Authorization: "Bearer " + process.env.AURION_TOKEN,
+        Authorization: `Bearer ${aurionToken}`,
       },
       params: {
         date_debut: moment(startDate).format("YYYY-MM-DD"),
@@ -97,8 +127,8 @@ DTEND;TZID=Europe/Paris:${event.date_fin}
 SUMMARY:${event.favori.f3}
 LOCATION:${event.favori.f2}
 DESCRIPTION:${event.type_activite}\\nIntervenants: ${event.intervenants}\\n${
-      event.description
-    }
+    event.description
+  }
 END:VEVENT
 `;
   }
@@ -107,14 +137,19 @@ END:VEVENT
   return icsMSG;
 }
 
-function writeICS(icsMSG: string) {
+function writeICS(icsMSG: string, icsFile: string) {
   console.log("Write ics...");
-  fs.writeFile("src/assets/aurion.ics", icsMSG, function (err) {
+  const filePath = path.join(__dirname, "../assets", icsFile);
+  const assetsDir = path.dirname(filePath);
+  if (!fs.existsSync(assetsDir)) {
+    fs.mkdirSync(assetsDir);
+  }
+  fs.writeFile(filePath, icsMSG, function (err) {
     if (err) {
-      return console.log(err);
+      throw new Error(`Error writing ICS file : ${err.message}`);
     }
   });
   console.log("ICS written");
 }
 
-export default { showPlanningForm, getPlanning, getICSLink };
+export default { showPlanningForm, getICSLink, getPlanning };
