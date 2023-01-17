@@ -2,33 +2,7 @@ import UserCalendar from "../models/calendar";
 import axios from "axios";
 import { NextFunction, Request, Response } from "express";
 import { randomUUID } from "crypto";
-import { Model, Schema } from "mongoose";
-
-// function login(req: Request, res: Response, next: NextFunction) {
-//   getUserToken(req.body.username, req.body.password)
-//     .then((token: string | void) => {
-//       if (token === null || token === undefined) {
-//         return res.status(400).json({ error: "Invalid username or password" });
-//       }
-//       User.findOne({ username: req.body.username })
-//         .then((user) => {
-//           if (user) {
-//             user.token = token;
-//             user.save();
-//             res.render("success", { user: user });
-//           } else {
-//             const user = new User({
-//               username: req.body.username,
-//               token: token,
-//             });
-//             user.save();
-//             res.render("success", { user: user });
-//           }
-//         })
-//         .catch((error: any) => res.status(400).json({ error }));
-//     })
-//     .catch((error) => res.status(400).json({ error }));
-// }
+import fs from "fs";
 
 const apiURL = "https://formation.ensta-bretagne.fr/mobile";
 
@@ -64,7 +38,7 @@ async function _getUserToken(username: string, password: string) {
     const response = await axios(config);
     const aurionToken: string = response.data.normal;
     console.log("Token received");
-    return _saveUserToken(username, aurionToken);
+    return await _saveUserToken(username, aurionToken);
   } catch (error) {
     console.error(error);
     throw error;
@@ -72,13 +46,13 @@ async function _getUserToken(username: string, password: string) {
 }
 
 async function _saveUserToken(username: string, aurionToken: string) {
-  await UserCalendar.findOne({ username: username })
+  return await UserCalendar.findOne({ username: username })
     .then(async (user) => {
       if (!user) {
         const user = new UserCalendar({
           username: username,
           aurionToken: aurionToken,
-          calendarLink: `/assets/${randomUUID()}/calendar.ics`,
+          calendarLink: `${randomUUID()}_calendar.ics`,
         });
         await user.save();
         return user.aurionToken;
@@ -102,7 +76,21 @@ async function getUser(username: string) {
 }
 
 async function deleteUser(req: Request, res: Response, next: NextFunction) {
+  await UserCalendar.findOne({ username: req.cookies.username }).then(
+    async (user) => {
+      if (!user) {
+        throw new Error("User not found");
+      }
+      fs.unlink(user.calendarLink, (err) => {
+        if (err) {
+          console.error(err);
+        }
+      });
+    }
+  );
   await UserCalendar.deleteOne({ username: req.body.username });
+  res.clearCookie("username");
+  res.redirect("/");
 }
 
 export default { getToken, getUser, deleteUser };

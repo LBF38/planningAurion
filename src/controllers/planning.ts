@@ -1,5 +1,6 @@
 require("dotenv/config");
 import axios from "axios";
+import path from "path";
 import moment from "moment";
 import fs from "fs";
 import { randomUUID } from "crypto";
@@ -9,24 +10,24 @@ import UserCalendar from "../models/calendar";
 const apiURL: string = "https://formation.ensta-bretagne.fr/mobile";
 
 function showPlanningForm(req: Request, res: Response, next: NextFunction) {
-  res.render("planning", { username: req.cookies["username"] });
+  res.render("planning", { username: req.cookies.username });
 }
 
 async function getICSLink(req: Request, res: Response, next: NextFunction) {
-  const username: string = req.body.username;
+  const username: string = req.cookies.username;
   if (!username) {
-    res.status(400).render("planning", { error: "Missing username" });
+    return res.status(400).render("planning", { error: "Missing username" });
   }
   try {
-    const link: string = await UserCalendar.findOne({ username }).then(
-      (userCalendar) => {
-        if (!userCalendar) {
-          throw new Error("User not found");
-        }
-        return userCalendar.calendarLink;
+    const calendarLink: string = await UserCalendar.findOne({
+      username: username,
+    }).then((userCalendar) => {
+      if (!userCalendar) {
+        throw new Error("User not found");
       }
-    );
-    res.render("planning", { icsLink: link });
+      return userCalendar.calendarLink;
+    });
+    res.render("planning", { icsLink: `/assets/${calendarLink}` });
   } catch (error: any) {
     res.status(400).render("planning", { error: error.message });
   }
@@ -35,18 +36,17 @@ async function getICSLink(req: Request, res: Response, next: NextFunction) {
 async function getPlanning(req: Request, res: Response, next: NextFunction) {
   console.log("Getting planning...");
   console.log(req.body);
-  const username: string = req.body.username;
-  if (!username) {
-    res.status(400).render("planning", { error: "Missing username parameter" });
+  const username: string = req.cookies.username;
+  console.log(username);
+  console.log(req.cookies.username);
+  if (username === undefined || username === null) {
+    return res
+      .status(400)
+      .render("planning", { error: "Missing username parameter" });
   }
-  const userCalendar = await UserCalendar.findOne({ username }).then((user) => {
-    if (!user) {
-      throw new Error("User not found");
-    }
-    return user;
-  });
-  const aurionToken: string = userCalendar.aurionToken;
-  const icsLink: string = userCalendar.calendarLink;
+  const userCalendar = await UserCalendar.findOne({ username: username });
+  const aurionToken: string = userCalendar!.aurionToken;
+  const icsLink: string = userCalendar!.calendarLink;
 
   _getPlanning(aurionToken, req.body.start_date, req.body.end_date)
     .then((calendar) => {
@@ -112,36 +112,41 @@ function convertToICS(calendar: any[]) {
   console.log("Convert to ics ...");
   // Création du fichier ICS à partir des données récupérées
   let icsMSG = `BEGIN:VCALENDAR
-  CALSCALE:GREGORIAN
-  METHOD:PUBLISH
-  PRODID:-//Aurion//FR
-  VERSION:2.0
-  `;
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+PRODID:-//Aurion//FR
+VERSION:2.0
+`;
 
   for (let event of calendar) {
     icsMSG += `BEGIN:VEVENT
-  UID:${randomUUID()}
-  DTSTAMP:${moment().format("YYYYMMDDThhmmss")}
-  DTSTART;TZID=Europe/Paris:${event.date_debut}
-  DTEND;TZID=Europe/Paris:${event.date_fin}
-  SUMMARY:${event.favori.f3}
-  LOCATION:${event.favori.f2}
-  DESCRIPTION:${event.type_activite}\\nIntervenants: ${event.intervenants}\\n${
-      event.description
-    }
-  END:VEVENT
-  `;
+UID:${randomUUID()}
+DTSTAMP:${moment().format("YYYYMMDDThhmmss")}
+DTSTART;TZID=Europe/Paris:${event.date_debut}
+DTEND;TZID=Europe/Paris:${event.date_fin}
+SUMMARY:${event.favori.f3}
+LOCATION:${event.favori.f2}
+DESCRIPTION:${event.type_activite}\\nIntervenants: ${event.intervenants}\\n${
+    event.description
+  }
+END:VEVENT
+`;
   }
   icsMSG += "END:VCALENDAR";
   console.log("ICS converted");
   return icsMSG;
 }
 
-function writeICS(icsMSG: string, icsLink: string) {
+function writeICS(icsMSG: string, icsFile: string) {
   console.log("Write ics...");
-  fs.writeFile(icsLink, icsMSG, function (err) {
+  const filePath = path.join(__dirname, "../assets", icsFile);
+  const assetsDir = path.dirname(filePath);
+  if (!fs.existsSync(assetsDir)) {
+    fs.mkdirSync(assetsDir);
+  }
+  fs.writeFile(filePath, icsMSG, function (err) {
     if (err) {
-      throw err;
+      throw new Error(`Error writing ICS file : ${err.message}`);
     }
   });
   console.log("ICS written");
