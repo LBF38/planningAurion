@@ -67,6 +67,10 @@ async function _getPlanning(
   startDate: moment.MomentInput,
   endDate: moment.MomentInput
 ) {
+  // @ts-ignore
+  if (startDate > endDate) {
+    throw new Error("start_date must be before end_date");
+  }
   try {
     var config = {
       method: "GET",
