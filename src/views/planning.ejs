@@ -44,6 +44,19 @@
         <a href="<%=icsLink%>">Click here</a> to download it.
       </div>
       <!-- Download OK alert -->
+      <%}%> <% if(typeof error !== 'undefined') {%>
+      <!-- input alert -->
+      <div
+        class="alert alert-danger mb-3 alert-absolute"
+        id="alert"
+        role="alert"
+        data-mdb-color="secondary"
+        style="padding-left: 0.5rem; margin-left: 11%; margin-right: 11%"
+      >
+        <i class="fas fa-calendar-xmark me-2"></i>
+        An error occured while retrieving your planning. Please try again later.
+      </div>
+      <!-- input alert -->
       <%}%>
 
       <div class="container-fluid">
@@ -53,7 +66,8 @@
             <div class="card user-card">
               <!-- Card content -->
               <div class="card-body card-body-cascade">
-                <% if(typeof error !== 'undefined') { %>
+                <% if(typeof error !== 'undefined') {
+                if(error.match(/start_date/)) {%>
                 <!-- input alert -->
                 <div
                   class="alert alert-danger mb-3 alert-absolute"
@@ -66,7 +80,7 @@
                   Start date must be before end date
                 </div>
                 <!-- input alert -->
-                <%}%>
+                <%}}%>
 
                 <form
                   action="/planning/pull"
@@ -117,6 +131,49 @@
               <!-- Card content -->
             </div>
             <!-- Card -->
+
+            <!-- Update Card -->
+            <div class="card user-card">
+              <!-- Card content -->
+              <div class="card-body card-body-cascade">
+                <% if(typeof error !== 'undefined') { if(error.match(/update/))
+                {%>
+                <!-- input alert -->
+                <div
+                  class="alert alert-danger mb-3 alert-absolute"
+                  id="alert"
+                  role="alert"
+                  data-mdb-color="secondary"
+                  style="padding-left: 0.5rem"
+                >
+                  <i class="fas fa-calendar-xmark me-2"></i>
+                  An error occured while updating your planning
+                </div>
+                <!-- input alert -->
+                <%}}%>
+
+                <form
+                  action="/planning/update"
+                  method="get"
+                  id="update"
+                  name="update"
+                >
+                  <fieldset>
+                    <legend>
+                      Update manually your planning (full synchronization)
+                    </legend>
+                    <button
+                      type="submit"
+                      class="btn btn-primary btn-block mb-3"
+                    >
+                      Update manually
+                    </button>
+                  </fieldset>
+                </form>
+              </div>
+              <!-- Card content -->
+            </div>
+            <!-- Update Card -->
           </div>
         </section>
       </div>
