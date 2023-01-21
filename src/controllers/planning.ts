@@ -67,7 +67,14 @@ async function _getPlanning(
   startDate: moment.MomentInput,
   endDate: moment.MomentInput
 ) {
-  // @ts-ignore
+  if (
+    startDate === undefined ||
+    startDate === null ||
+    endDate === undefined ||
+    endDate === null
+  ) {
+    throw new Error("Missing start_date or end_date parameter");
+  }
   if (startDate > endDate) {
     throw new Error("start_date must be before end_date");
   }
@@ -131,8 +138,8 @@ DTEND;TZID=Europe/Paris:${event.date_fin}
 SUMMARY:${event.favori.f3}
 LOCATION:${event.favori.f2}
 DESCRIPTION:${event.type_activite}\\nIntervenants: ${event.intervenants}\\n${
-    event.description
-  }
+      event.description
+    }
 END:VEVENT
 `;
   }
