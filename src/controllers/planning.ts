@@ -35,10 +35,7 @@ async function getICSLink(req: Request, res: Response, next: NextFunction) {
 
 async function getPlanning(req: Request, res: Response, next: NextFunction) {
   console.log("Getting planning...");
-  console.log(req.body);
   const username: string = req.cookies.username;
-  console.log(username);
-  console.log(req.cookies.username);
   if (username === undefined || username === null) {
     return res
       .status(400)
@@ -50,8 +47,9 @@ async function getPlanning(req: Request, res: Response, next: NextFunction) {
 
   _getPlanning(aurionToken, req.body.start_date, req.body.end_date)
     .then((calendar) => {
-      const icsMSG = convertToICS(calendar);
-      writeICS(icsMSG, icsLink);
+      const icsCalendar = convertToICS(calendar);
+      saveToDatabase(icsCalendar, username);
+      writeICS(icsCalendar, icsLink);
       console.log("Planning sent");
       res.redirect("/planning/link");
     })
@@ -98,11 +96,9 @@ async function _getPlanning(
     for (let i = 0; i < calendar.length; i++) {
       const event = calendar[i];
       if (event.is_empty) {
-        // console.log("Pas de cours\n");
         continue;
       }
       if (event.is_break) {
-        // console.log("Pause");
         continue;
       }
       if (!event.description) {
@@ -121,7 +117,6 @@ async function _getPlanning(
 
 function convertToICS(calendar: any[]) {
   console.log("Convert to ics ...");
-  // Création du fichier ICS à partir des données récupérées
   let icsMSG = `BEGIN:VCALENDAR
 CALSCALE:GREGORIAN
 METHOD:PUBLISH
@@ -146,6 +141,20 @@ END:VEVENT
   icsMSG += "END:VCALENDAR";
   console.log("ICS converted");
   return icsMSG;
+}
+
+function saveToDatabase(icsCalendar: string, username: string) {
+  console.log("Save to database...");
+  UserCalendar.findOneAndUpdate({ username: username })
+    .then((userCalendar) => {
+      if (!userCalendar) {
+        throw new Error("User not found");
+      }
+      userCalendar.calendarContent = icsCalendar;
+    })
+    .catch((error) => {
+      throw new Error(`Error saving to database : ${error.message}`);
+    });
 }
 
 function writeICS(icsMSG: string, icsFile: string) {

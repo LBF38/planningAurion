@@ -85,10 +85,12 @@ async function deleteUser(req: Request, res: Response, next: NextFunction) {
         if (err) {
           console.error(err);
         }
+        console.log("File deleted");
       });
     }
   );
   await UserCalendar.deleteOne({ username: req.body.username });
+  console.log("User deleted");
   res.clearCookie("username");
   res.redirect("/");
 }
