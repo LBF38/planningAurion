@@ -6,6 +6,8 @@ import fs from "fs";
 import { randomUUID } from "crypto";
 import { NextFunction, Request, Response } from "express";
 import UserCalendar from "../models/calendar";
+import mongoose from "mongoose";
+import UserController from "./user";
 
 const apiURL: string = "https://formation.ensta-bretagne.fr/mobile";
 
@@ -172,4 +174,48 @@ function writeICS(icsMSG: string, icsFile: string) {
   console.log("ICS written");
 }
 
-export default { showPlanningForm, getICSLink, getPlanning };
+async function updatePlannings() {
+  const allUsers = await mongoose.connection.db
+    .collection("usercalendars")
+    .find()
+    .toArray();
+  for (let user of allUsers) {
+    _getPlanning(user.aurionToken, moment().format(), moment().add(1, "year"))
+      .then((calendar) => {
+        const icsCalendar = convertToICS(calendar);
+        saveToDatabase(icsCalendar, user.username);
+        writeICS(icsCalendar, user.calendarLink);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
+}
+
+async function updateMyPlanning(
+  request: Request,
+  response: Response,
+  next: NextFunction
+) {
+  try {
+    const user = await UserController.getUser(request.cookies.username);
+    _getPlanning(user.aurionToken, moment().format(), moment().add(1, "year"))
+      .then((calendar) => {
+        const icsCalendar = convertToICS(calendar);
+        saveToDatabase(icsCalendar, user.username);
+        writeICS(icsCalendar, user.calendarLink);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+    response.redirect("/planning/link");
+  } catch (error: any) {
+    response.status(400).render("planning", {
+      error: `Error on updating planning :${error.message}`,
+    });
+  }
+}
+
+setTimeout(updatePlannings, 1000 * 60 * 60 * 24);
+
+export default { showPlanningForm, getICSLink, getPlanning, updateMyPlanning };
