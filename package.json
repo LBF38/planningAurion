@@ -1,12 +1,15 @@
 {
   "name": "projet-planning-ensta-b",
   "version": "1.0.0",
-  "description": "",
+  "description": "Aurion Synchronizer",
   "main": "server.ts",
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "test": "jest",
-    "dev": "nodemon ./src/server.ts"
+    "dev": "nodemon ./src/server.ts",
+    "build": "tsc && cp -r ./src/views ./build/src/ && cp -r ./src/static ./build/src/",
+    "start": "node ./build/src/server.js",
+    "clean": "rm -rf ./build"
   },
   "keywords": [],
   "author": "Mathis URIEN",

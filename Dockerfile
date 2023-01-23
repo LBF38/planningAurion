@@ -1,18 +1,25 @@
-FROM node:16
+FROM ubuntu:22.10
 
-RUN curl -f https://get.pnpm.io/v6.16.js | node - add --global pnpm
+# Install nodejs and pnpm
+RUN apt-get update -yq \
+   && apt-get install curl gnupg -yq \
+   && curl -sL https://deb.nodesource.com/setup_16.x | bash \
+   && apt-get install nodejs npm -yq \
+   && apt-get clean -y
+
+RUN npm install -g pnpm
 
 # Create app directory
 WORKDIR /usr/src/app
 
 # Install app dependencies
-COPY package*.json ./
+ADD package.json ./
+ADD pnpm-workspace.yaml ./
 
 RUN pnpm install
 
 # Bundle app source
 COPY . .
+RUN pnpm build
 
-EXPOSE 3000
-
-CMD [ "pnpm", "dev" ]
+CMD pnpm start
