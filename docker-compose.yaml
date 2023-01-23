@@ -1,0 +1,17 @@
+version: "3"
+services:
+  db:
+    image: mongo
+    ports:
+      - "27017:27017"
+  app:
+    build: .
+    depends_on:
+      - db
+    ports:
+      - "5000:5000"
+    environment:
+      - MONGODB_URL=mongodb://db:27017/aurion-db
+      - PORT=5000
+      - DEBUG=*
+      - NODE_ENV=production

@@ -1,9 +1,10 @@
 import dotenv from "dotenv";
 dotenv.config();
-import express from "express";
+import express, { NextFunction, Request, Response } from "express";
 import path from "path";
 import helmet from "helmet";
 import cookieParser from "cookie-parser";
+const debug = require("debug")("express:app");
 
 import mainRoutes from "./routes/main";
 import planningRoutes from "./routes/planning";
@@ -23,13 +24,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "/static")));
 
-app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader(
+app.use((request: Request, response: Response, next: NextFunction) => {
+  debug(request.method + " " + request.url);
+  response.setHeader("Access-Control-Allow-Origin", "*");
+  response.setHeader(
     "Access-Control-Allow-Headers",
     "Origin, X-Requested-With, Content, Accept, Content-Type, Authorization"
   );
-  res.setHeader(
+  response.setHeader(
     "Access-Control-Allow-Methods",
     "GET, POST, PUT, DELETE, PATCH, OPTIONS"
   );

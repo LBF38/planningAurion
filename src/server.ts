@@ -1,5 +1,6 @@
 import http from "http";
 import app from "./app";
+const debug = require("debug")("express:server");
 
 const normalizePort = (val: string) => {
   const port = parseInt(val, 10);
@@ -24,10 +25,10 @@ const errorHandler = (error: { syscall: string; code: any }) => {
     typeof address === "string" ? "pipe " + address : "port: " + port;
   switch (error.code) {
     case "EACCES":
-      console.error(bind + " requires elevated privileges.");
+      debug(bind + " requires elevated privileges.");
       process.exit(1);
     case "EADDRINUSE":
-      console.error(bind + " is already in use.");
+      debug(bind + " is already in use.");
       process.exit(1);
     default:
       throw error;
@@ -40,7 +41,7 @@ server.on("error", errorHandler);
 server.on("listening", () => {
   const address = server.address();
   const bind = typeof address === "string" ? "pipe " + address : "port " + port;
-  console.log(`Listening on http://localhost:${bind.split(" ")[1]}`);
+  debug(`Listening on http://localhost:${bind.split(" ")[1]}`);
 });
 
 server.listen(port);

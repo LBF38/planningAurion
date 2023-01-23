@@ -5,6 +5,8 @@ import moment from "moment";
 import fs from "fs";
 import { randomUUID } from "crypto";
 import { NextFunction, Request, Response } from "express";
+const debug = require("debug")("controllers:planning");
+
 import UserCalendar from "../models/calendar";
 import mongoose from "mongoose";
 import UserController from "./user";
@@ -36,7 +38,8 @@ async function getICSLink(req: Request, res: Response, next: NextFunction) {
 }
 
 async function getPlanning(req: Request, res: Response, next: NextFunction) {
-  console.log("Getting planning...");
+  debug("Getting planning...");
+  debug(req.body);
   const username: string = req.cookies.username;
   if (username === undefined || username === null) {
     return res
@@ -52,7 +55,7 @@ async function getPlanning(req: Request, res: Response, next: NextFunction) {
       const icsCalendar = convertToICS(calendar);
       saveToDatabase(icsCalendar, username);
       writeICS(icsCalendar, icsLink);
-      console.log("Planning sent");
+      debug("Planning sent");
       res.redirect("/planning/link");
     })
     .catch((error) => {
@@ -112,13 +115,14 @@ async function _getPlanning(
     }
     return ics;
   } catch (error) {
-    console.error(error);
+    debug(error);
     throw error;
   }
 }
 
 function convertToICS(calendar: any[]) {
-  console.log("Convert to ics ...");
+  debug("Convert to ics ...");
+  // Création du fichier ICS à partir des données récupérées
   let icsMSG = `BEGIN:VCALENDAR
 CALSCALE:GREGORIAN
 METHOD:PUBLISH
@@ -141,7 +145,7 @@ END:VEVENT
 `;
   }
   icsMSG += "END:VCALENDAR";
-  console.log("ICS converted");
+  debug("ICS converted");
   return icsMSG;
 }
 
@@ -161,7 +165,7 @@ function saveToDatabase(icsCalendar: string, username: string) {
 }
 
 function writeICS(icsMSG: string, icsFile: string) {
-  console.log("Write ics...");
+  debug("Write ics...");
   const filePath = path.join(__dirname, "../assets", icsFile);
   const assetsDir = path.dirname(filePath);
   if (!fs.existsSync(assetsDir)) {
@@ -172,7 +176,7 @@ function writeICS(icsMSG: string, icsFile: string) {
       throw new Error(`Error writing ICS file : ${err.message}`);
     }
   });
-  console.log("ICS written");
+  debug("ICS written");
 }
 
 async function updatePlannings() {
