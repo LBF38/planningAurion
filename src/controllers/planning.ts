@@ -155,7 +155,8 @@ function saveToDatabase(icsCalendar: string, username: string) {
       userCalendar.calendarContent = icsCalendar;
     })
     .catch((error) => {
-      throw new Error(`Error saving to database : ${error.message}`);
+      console.log("[INFO] Error saving to database :" + error.message)
+      return Error(`Error saving to database : ${error.message}`);
     });
 }
 
