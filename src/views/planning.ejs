@@ -26,6 +26,14 @@
   <!-- Bootstrap -->
   <link href="/css/bootstrap.min.css" rel="stylesheet" />
 
+  <script
+          type="application/javascript"
+          src="/js/jquery-3.3.1.min.js"
+  ></script>
+  <script type="application/javascript" src="/js/bootstrap.js"></script>
+  <script type="application/javascript" src="/js/popper.min.js"></script>
+
+
   <title>Aurion Synchronizer | Planning</title>
 </head>
 <body>
@@ -190,11 +198,61 @@
                 </form>
                 <!-- Manual update -->
                 <!-- Delete user -->
-                <form action="/auth/delete" method="post">
-                  <button type="submit" class="btn btn-danger btn-block mb-3">
-                    Delete my account
-                  </button>
-                </form>
+                <button data-toggle="modal" data-target="#confirmDelete" class="btn btn-block btn-danger mb-3">
+                  Delete my account
+                </button>
+                <!-- Modal -->
+                <div
+                        class="modal"
+                        id="confirmDelete"
+                        tabindex="-1"
+                        aria-labelledby="confirmLabel"
+                >
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="confirmLabel">
+                          <i
+                                  class="fas fa-warning"
+                                  style="color: #cd0f0f"
+                          ></i>
+                          Do you confirm this action?
+                        </h5>
+                        <button
+                                type="button"
+                                class="btn-close"
+                                data-dismiss="modal"
+                                aria-label="Close"
+                        ></button>
+                      </div>
+                      <div class="modal-body text-justify">
+                        <p>
+                          If you confirm, your data will be deleted (forever, which is a long time period).
+                          You will have to re-enter your credentials if you want to get your planning in the future.
+                        </p>
+                      </div>
+                      <div class="modal-footer">
+                        <button
+                                type="button"
+                                class="btn btn-secondary"
+                                data-dismiss="modal"
+                        >
+                          Close
+                        </button>
+                        <form action="/auth/delete" method="post">
+                          <button
+                                  type="submit"
+                                  class="btn btn-danger"
+                                  aria-label="Delete"
+                          >I confirm, delete!</button>
+                        </form>
+
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Modal -->
+
                 <!-- Delete user -->
               </div>
               <!-- Card content -->
