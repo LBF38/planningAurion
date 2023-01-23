@@ -1,49 +1,93 @@
 require("dotenv/config");
 import axios from "axios";
+import path from "path";
 import moment from "moment";
 import fs from "fs";
 import { randomUUID } from "crypto";
 import { NextFunction, Request, Response } from "express";
-const apiURL = "https://formation.ensta-bretagne.fr/mobile";
+const debug = require("debug")("controllers:planning");
+
+import UserCalendar from "../models/calendar";
+import mongoose from "mongoose";
+import UserController from "./user";
+
+const apiURL: string = "https://formation.ensta-bretagne.fr/mobile";
 
 function showPlanningForm(req: Request, res: Response, next: NextFunction) {
-  res.render("planning");
+  res.render("planning", { username: req.cookies.username });
 }
 
-function getICSLink(req: Request, res: Response, next: NextFunction) {
-  res.render("planning", { icsLink: "/assets/aurion.ics" });
+async function getICSLink(req: Request, res: Response, next: NextFunction) {
+  const username: string = req.cookies.username;
+  if (!username) {
+    return res.status(400).render("planning", { error: "Missing username" });
+  }
+  try {
+    const calendarLink: string = await UserCalendar.findOne({
+      username: username,
+    }).then((userCalendar) => {
+      if (!userCalendar) {
+        throw new Error("User not found");
+      }
+      return userCalendar.calendarLink;
+    });
+    res.render("planning", { icsLink: `/assets/${calendarLink}` });
+  } catch (error: any) {
+    res.status(400).render("planning", { error: error.message });
+  }
 }
 
-function getPlanning(req: Request, res: Response, next: NextFunction) {
-  console.log("Getting planning...");
-  console.log(req.body);
-  _getPlanning(req.body.start_date, req.body.end_date)
+async function getPlanning(req: Request, res: Response, next: NextFunction) {
+  debug("Getting planning...");
+  debug(req.body);
+  const username: string = req.cookies.username;
+  if (username === undefined || username === null) {
+    return res
+      .status(400)
+      .render("planning", { error: "Missing username parameter" });
+  }
+  const userCalendar = await UserCalendar.findOne({ username: username });
+  const aurionToken: string = userCalendar!.aurionToken;
+  const icsLink: string = userCalendar!.calendarLink;
+
+  _getPlanning(aurionToken, req.body.start_date, req.body.end_date)
     .then((calendar) => {
-      const icsMSG = convertToICS(calendar);
-      writeICS(icsMSG);
-      console.log("Planning sent");
+      const icsCalendar = convertToICS(calendar);
+      saveToDatabase(icsCalendar, username);
+      writeICS(icsCalendar, icsLink);
+      debug("Planning sent");
       res.redirect("/planning/link");
     })
     .catch((error) => {
-      // res.status(400).json({ error: error });
-      res
-        .status(400)
-        .render("planning", { error: "Error retrieving planning" });
-      // res.status(400).redirect("/planning?start_date=" + req.body.start_date + "&end_date=" + req.body.end_date);
+      res.status(400).render("planning", {
+        error: `Error retrieving planning :${error.message}`,
+      });
     });
 }
 
 async function _getPlanning(
+  aurionToken: string,
   startDate: moment.MomentInput,
   endDate: moment.MomentInput
 ) {
+  if (
+    startDate === undefined ||
+    startDate === null ||
+    endDate === undefined ||
+    endDate === null
+  ) {
+    throw new Error("Missing start_date or end_date parameter");
+  }
+  if (startDate > endDate) {
+    throw new Error("start_date must be before end_date");
+  }
   try {
     var config = {
       method: "GET",
       url: "/mon_planning",
       baseURL: apiURL,
       headers: {
-        Authorization: "Bearer " + process.env.AURION_TOKEN,
+        Authorization: `Bearer ${aurionToken}`,
       },
       params: {
         date_debut: moment(startDate).format("YYYY-MM-DD"),
@@ -57,11 +101,9 @@ async function _getPlanning(
     for (let i = 0; i < calendar.length; i++) {
       const event = calendar[i];
       if (event.is_empty) {
-        // console.log("Pas de cours\n");
         continue;
       }
       if (event.is_break) {
-        // console.log("Pause");
         continue;
       }
       if (!event.description) {
@@ -73,13 +115,13 @@ async function _getPlanning(
     }
     return ics;
   } catch (error) {
-    console.error(error);
+    debug(error);
     throw error;
   }
 }
 
 function convertToICS(calendar: any[]) {
-  console.log("Convert to ics ...");
+  debug("Convert to ics ...");
   // Création du fichier ICS à partir des données récupérées
   let icsMSG = `BEGIN:VCALENDAR
 CALSCALE:GREGORIAN
@@ -103,18 +145,82 @@ END:VEVENT
 `;
   }
   icsMSG += "END:VCALENDAR";
-  console.log("ICS converted");
+  debug("ICS converted");
   return icsMSG;
 }
 
-function writeICS(icsMSG: string) {
-  console.log("Write ics...");
-  fs.writeFile("src/assets/aurion.ics", icsMSG, function (err) {
-    if (err) {
-      return console.log(err);
-    }
-  });
-  console.log("ICS written");
+function saveToDatabase(icsCalendar: string, username: string) {
+  console.log("Save to database...");
+  UserCalendar.findOneAndUpdate({ username: username })
+    .then((userCalendar) => {
+      if (!userCalendar) {
+        throw new Error("User not found");
+      }
+      userCalendar.calendarContent = icsCalendar;
+    })
+    .catch((error) => {
+      console.log("[INFO] Error saving to database :" + error.message)
+      return Error(`Error saving to database : ${error.message}`);
+    });
 }
 
-export default { showPlanningForm, getPlanning, getICSLink };
+function writeICS(icsMSG: string, icsFile: string) {
+  debug("Write ics...");
+  const filePath = path.join(__dirname, "../assets", icsFile);
+  const assetsDir = path.dirname(filePath);
+  if (!fs.existsSync(assetsDir)) {
+    fs.mkdirSync(assetsDir);
+  }
+  fs.writeFile(filePath, icsMSG, function (err) {
+    if (err) {
+      throw new Error(`Error writing ICS file : ${err.message}`);
+    }
+  });
+  debug("ICS written");
+}
+
+async function updatePlannings() {
+  const allUsers = await mongoose.connection.db
+    .collection("usercalendars")
+    .find()
+    .toArray();
+  for (let user of allUsers) {
+    _getPlanning(user.aurionToken, moment().format(), moment().add(1, "year"))
+      .then((calendar) => {
+        const icsCalendar = convertToICS(calendar);
+        saveToDatabase(icsCalendar, user.username);
+        writeICS(icsCalendar, user.calendarLink);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
+}
+
+async function updateMyPlanning(
+  request: Request,
+  response: Response,
+  next: NextFunction
+) {
+  try {
+    const user = await UserController.getUser(request.cookies.username);
+    _getPlanning(user.aurionToken, moment().format(), moment().add(1, "year"))
+      .then((calendar) => {
+        const icsCalendar = convertToICS(calendar);
+        saveToDatabase(icsCalendar, user.username);
+        writeICS(icsCalendar, user.calendarLink);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+    response.redirect("/planning/link");
+  } catch (error: any) {
+    response.status(400).render("planning", {
+      error: `Error on updating planning :${error.message}`,
+    });
+  }
+}
+
+setTimeout(updatePlannings, 1000 * 60 * 60 * 24);
+
+export default { showPlanningForm, getICSLink, getPlanning, updateMyPlanning };

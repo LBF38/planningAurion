@@ -1,6 +1,6 @@
 .env
 /node_modules
-aurion.ics
+assets/
 
 .DS_Store
 
@@ -10,3 +10,6 @@ CalAurion-NG/node_modules/
 build/
 
 CalAurion-NG/
+
+# testing
+coverage/
