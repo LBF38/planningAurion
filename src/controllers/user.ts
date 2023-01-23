@@ -3,20 +3,21 @@ import axios from "axios";
 import { NextFunction, Request, Response } from "express";
 import { randomUUID } from "crypto";
 import fs from "fs";
+const debug = require("debug")("controllers:user");
 
 const apiURL = "https://formation.ensta-bretagne.fr/mobile";
 
 function getToken(req: Request, res: Response, next: NextFunction) {
-  console.log("Getting token...");
+  debug("Getting token...");
   _getUserToken(req.body.username, req.body.password)
     .then(() => {
-      console.log("Token sent");
-      console.log(req.body.username);
+      debug("Token sent");
+      debug(req.body.username);
       res.cookie("username", req.body.username, { httpOnly: true });
       res.redirect("/planning/form");
     })
     .catch((error) => {
-      console.error(error);
+      debug(error);
       res.render("index", { error: error.message });
     });
 }
@@ -37,10 +38,10 @@ async function _getUserToken(username: string, password: string) {
   try {
     const response = await axios(config);
     const aurionToken: string = response.data.normal;
-    console.log("Token received");
+    debug("Token received");
     return await _saveUserToken(username, aurionToken);
   } catch (error) {
-    console.error(error);
+    debug(error);
     throw error;
   }
 }
@@ -83,7 +84,7 @@ async function deleteUser(req: Request, res: Response, next: NextFunction) {
       }
       fs.unlink(user.calendarLink, (err) => {
         if (err) {
-          console.error(err);
+          debug(err);
         }
       });
     }

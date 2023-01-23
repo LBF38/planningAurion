@@ -5,6 +5,8 @@ import moment from "moment";
 import fs from "fs";
 import { randomUUID } from "crypto";
 import { NextFunction, Request, Response } from "express";
+const debug = require("debug")("controllers:planning");
+
 import UserCalendar from "../models/calendar";
 
 const apiURL: string = "https://formation.ensta-bretagne.fr/mobile";
@@ -34,11 +36,9 @@ async function getICSLink(req: Request, res: Response, next: NextFunction) {
 }
 
 async function getPlanning(req: Request, res: Response, next: NextFunction) {
-  console.log("Getting planning...");
-  console.log(req.body);
+  debug("Getting planning...");
+  debug(req.body);
   const username: string = req.cookies.username;
-  console.log(username);
-  console.log(req.cookies.username);
   if (username === undefined || username === null) {
     return res
       .status(400)
@@ -52,7 +52,7 @@ async function getPlanning(req: Request, res: Response, next: NextFunction) {
     .then((calendar) => {
       const icsMSG = convertToICS(calendar);
       writeICS(icsMSG, icsLink);
-      console.log("Planning sent");
+      debug("Planning sent");
       res.redirect("/planning/link");
     })
     .catch((error) => {
@@ -87,11 +87,11 @@ async function _getPlanning(
     for (let i = 0; i < calendar.length; i++) {
       const event = calendar[i];
       if (event.is_empty) {
-        // console.log("Pas de cours\n");
+        // debug("Pas de cours\n");
         continue;
       }
       if (event.is_break) {
-        // console.log("Pause");
+        // debug("Pause");
         continue;
       }
       if (!event.description) {
@@ -103,13 +103,13 @@ async function _getPlanning(
     }
     return ics;
   } catch (error) {
-    console.error(error);
+    debug(error);
     throw error;
   }
 }
 
 function convertToICS(calendar: any[]) {
-  console.log("Convert to ics ...");
+  debug("Convert to ics ...");
   // Création du fichier ICS à partir des données récupérées
   let icsMSG = `BEGIN:VCALENDAR
 CALSCALE:GREGORIAN
@@ -127,18 +127,18 @@ DTEND;TZID=Europe/Paris:${event.date_fin}
 SUMMARY:${event.favori.f3}
 LOCATION:${event.favori.f2}
 DESCRIPTION:${event.type_activite}\\nIntervenants: ${event.intervenants}\\n${
-    event.description
-  }
+      event.description
+    }
 END:VEVENT
 `;
   }
   icsMSG += "END:VCALENDAR";
-  console.log("ICS converted");
+  debug("ICS converted");
   return icsMSG;
 }
 
 function writeICS(icsMSG: string, icsFile: string) {
-  console.log("Write ics...");
+  debug("Write ics...");
   const filePath = path.join(__dirname, "../assets", icsFile);
   const assetsDir = path.dirname(filePath);
   if (!fs.existsSync(assetsDir)) {
@@ -149,7 +149,7 @@ function writeICS(icsMSG: string, icsFile: string) {
       throw new Error(`Error writing ICS file : ${err.message}`);
     }
   });
-  console.log("ICS written");
+  debug("ICS written");
 }
 
 export default { showPlanningForm, getICSLink, getPlanning };
