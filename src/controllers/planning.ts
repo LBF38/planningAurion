@@ -8,6 +8,8 @@ import { NextFunction, Request, Response } from "express";
 const debug = require("debug")("controllers:planning");
 
 import UserCalendar from "../models/calendar";
+import mongoose from "mongoose";
+import UserController from "./user";
 
 const apiURL: string = "https://formation.ensta-bretagne.fr/mobile";
 
@@ -50,8 +52,9 @@ async function getPlanning(req: Request, res: Response, next: NextFunction) {
 
   _getPlanning(aurionToken, req.body.start_date, req.body.end_date)
     .then((calendar) => {
-      const icsMSG = convertToICS(calendar);
-      writeICS(icsMSG, icsLink);
+      const icsCalendar = convertToICS(calendar);
+      saveToDatabase(icsCalendar, username);
+      writeICS(icsCalendar, icsLink);
       debug("Planning sent");
       res.redirect("/planning/link");
     })
@@ -67,6 +70,17 @@ async function _getPlanning(
   startDate: moment.MomentInput,
   endDate: moment.MomentInput
 ) {
+  if (
+    startDate === undefined ||
+    startDate === null ||
+    endDate === undefined ||
+    endDate === null
+  ) {
+    throw new Error("Missing start_date or end_date parameter");
+  }
+  if (startDate > endDate) {
+    throw new Error("start_date must be before end_date");
+  }
   try {
     var config = {
       method: "GET",
@@ -87,11 +101,9 @@ async function _getPlanning(
     for (let i = 0; i < calendar.length; i++) {
       const event = calendar[i];
       if (event.is_empty) {
-        // debug("Pas de cours\n");
         continue;
       }
       if (event.is_break) {
-        // debug("Pause");
         continue;
       }
       if (!event.description) {
@@ -137,6 +149,21 @@ END:VEVENT
   return icsMSG;
 }
 
+function saveToDatabase(icsCalendar: string, username: string) {
+  console.log("Save to database...");
+  UserCalendar.findOneAndUpdate({ username: username })
+    .then((userCalendar) => {
+      if (!userCalendar) {
+        throw new Error("User not found");
+      }
+      userCalendar.calendarContent = icsCalendar;
+    })
+    .catch((error) => {
+      console.log("[INFO] Error saving to database :" + error.message)
+      return Error(`Error saving to database : ${error.message}`);
+    });
+}
+
 function writeICS(icsMSG: string, icsFile: string) {
   debug("Write ics...");
   const filePath = path.join(__dirname, "../assets", icsFile);
@@ -152,4 +179,48 @@ function writeICS(icsMSG: string, icsFile: string) {
   debug("ICS written");
 }
 
-export default { showPlanningForm, getICSLink, getPlanning };
+async function updatePlannings() {
+  const allUsers = await mongoose.connection.db
+    .collection("usercalendars")
+    .find()
+    .toArray();
+  for (let user of allUsers) {
+    _getPlanning(user.aurionToken, moment().format(), moment().add(1, "year"))
+      .then((calendar) => {
+        const icsCalendar = convertToICS(calendar);
+        saveToDatabase(icsCalendar, user.username);
+        writeICS(icsCalendar, user.calendarLink);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
+}
+
+async function updateMyPlanning(
+  request: Request,
+  response: Response,
+  next: NextFunction
+) {
+  try {
+    const user = await UserController.getUser(request.cookies.username);
+    _getPlanning(user.aurionToken, moment().format(), moment().add(1, "year"))
+      .then((calendar) => {
+        const icsCalendar = convertToICS(calendar);
+        saveToDatabase(icsCalendar, user.username);
+        writeICS(icsCalendar, user.calendarLink);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+    response.redirect("/planning/link");
+  } catch (error: any) {
+    response.status(400).render("planning", {
+      error: `Error on updating planning :${error.message}`,
+    });
+  }
+}
+
+setTimeout(updatePlannings, 1000 * 60 * 60 * 24);
+
+export default { showPlanningForm, getICSLink, getPlanning, updateMyPlanning };

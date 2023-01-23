@@ -4,6 +4,7 @@ import { NextFunction, Request, Response } from "express";
 import { randomUUID } from "crypto";
 import fs from "fs";
 const debug = require("debug")("controllers:user");
+import path from "path";
 
 const apiURL = "https://formation.ensta-bretagne.fr/mobile";
 
@@ -82,14 +83,17 @@ async function deleteUser(req: Request, res: Response, next: NextFunction) {
       if (!user) {
         throw new Error("User not found");
       }
-      fs.unlink(user.calendarLink, (err) => {
+      const filePath = path.join(__dirname, "../assets", user.calendarLink);
+      fs.unlink(filePath, (err) => {
         if (err) {
           debug(err);
         }
+        console.log("File deleted");
       });
     }
   );
   await UserCalendar.deleteOne({ username: req.body.username });
+  console.log("User deleted");
   res.clearCookie("username");
   res.redirect("/");
 }

@@ -26,12 +26,20 @@
     <!-- Bootstrap -->
     <link href="/css/bootstrap.min.css" rel="stylesheet" />
 
+    <script
+      type="application/javascript"
+      src="/js/jquery-3.3.1.min.js"
+    ></script>
+    <script type="application/javascript" src="/js/bootstrap.js"></script>
+    <script type="application/javascript" src="/js/popper.min.js"></script>
+
     <title>AURION Synchronizer | Login</title>
   </head>
+
   <body class="fixed-sn grey-skin">
     <main class="my-5" style="padding-top: 2%">
       <!-- Wrong password alert -->
-      <% if (typeof error !== 'undefined') { %>
+      <% if (typeof error !=='undefined' ) { %>
       <div
         class="alert alert-danger mb-0 alert-absolute"
         id="alert"
@@ -96,6 +104,92 @@
                     Sign in
                   </button>
                 </form>
+                <p
+                  class="text-center text-info"
+                  data-toggle="modal"
+                  data-target="#aboutDialog"
+                >
+                  <a data-toggle="modal" data-target="#exampleModal"
+                    >About this page</a
+                  >
+                </p>
+                <!-- Modal -->
+                <div
+                  class="modal fade"
+                  id="aboutDialog"
+                  tabindex="-1"
+                  aria-labelledby="aboutLabel"
+                  aria-hidden="true"
+                >
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="aboutLabel">
+                          <i
+                            class="fas fa-info-circle"
+                            style="color: #0f57cd"
+                          ></i>
+                          About
+                        </h5>
+                        <button
+                          type="button"
+                          class="btn-close"
+                          data-dismiss="modal"
+                          aria-label="Close"
+                        ></button>
+                      </div>
+                      <div class="modal-body text-justify">
+                        <p>
+                          This app is aimed at improving the planning download
+                          feature of Aurion (<a
+                            href="https://formation.ensta-bretagne.fr"
+                            >official page</a
+                          >)
+                        </p>
+                        <br />
+                        <p>
+                          While the native "download as ics" feature misses a
+                          lot of information and is only possible week per week,
+                          this app allows you to download your entire planning
+                          in one go for a specified timeframe.
+                        </p>
+                        <br />
+                        <p>
+                          To do so, simply enter your Aurion credentials and
+                          click "Sign in". You will then be redirected to a page
+                          where you will select the time period you want to
+                          download your planning for.
+                        </p>
+                        <br /><br />
+                        <p>
+                          Source code available
+                          <a href="https://github.com/LBF38/planningAurion"
+                            >here</a
+                          >. To report a bug, please open an issue on
+                          <a
+                            href="https://github.com/LBF38/planningAurion/issues/new/choose"
+                            >GitHub</a
+                          >.
+                        </p>
+                        <p>
+                          Developed by
+                          <a href="https://github.com/LBF38">LBF38</a>. Frontend
+                          by <a href="https://github.com/thomas40510">Bobby</a>.
+                        </p>
+                      </div>
+                      <div class="modal-footer">
+                        <button
+                          type="button"
+                          class="btn btn-secondary"
+                          data-dismiss="modal"
+                        >
+                          Close
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Modal -->
               </div>
               <!-- Card content -->
             </div>
