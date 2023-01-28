@@ -20,3 +20,5 @@ Parcours de l'utilisateur :
 - `POST /planning/pull` : Récupère le planning de l'utilisateur.
 - `GET /planning/download` : Télécharge le fichier `ics` du planning de l'utilisateur.
 - `POST /login` : Connexion de l'utilisateur.
+
+:warning: Ces routes ne sont pas à jour. Il faut les mettre à jour. :warning:
