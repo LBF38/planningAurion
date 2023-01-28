@@ -1,15 +1,14 @@
 require("dotenv/config");
 import axios from "axios";
-import path from "path";
-import moment from "moment";
-import fs from "fs";
-import { randomUUID } from "crypto";
 import { NextFunction, Request, Response } from "express";
-import ical, { ICalCalendarMethod } from "ical-generator";
+import fs from "fs";
+import moment from "moment";
+import path from "path";
 const debug = require("debug")("controllers:planning");
 
-import UserCalendar from "../models/calendar";
+import ical from "ical-generator";
 import mongoose from "mongoose";
+import UserCalendar from "../models/calendar";
 import UserController from "./user";
 
 const apiURL: string = "https://formation.ensta-bretagne.fr/mobile";
@@ -47,11 +46,7 @@ async function getPlanning(req: Request, res: Response, next: NextFunction) {
       .status(400)
       .render("planning", { error: "Missing username parameter" });
   }
-  const userCalendar = await UserCalendar.findOne({ username: username }).catch(
-    (error) => {
-      res.status(400).render("planning", { error: error.message });
-    }
-  );
+  const userCalendar = await UserCalendar.findOne({ username: username });
   const aurionToken: string = userCalendar!.aurionToken;
   const icsLink: string = userCalendar!.calendarLink;
 
@@ -101,10 +96,6 @@ async function _getPlanning(
     };
     const response = await axios(config);
     var calendar = response.data;
-    fs.writeFileSync(
-      path.join(__dirname, "../assets", "raw_data.json"),
-      JSON.stringify(calendar)
-    );
     var ics = [];
     for (let i = 0; i < calendar.length; i++) {
       const event = calendar[i];
@@ -117,8 +108,6 @@ async function _getPlanning(
       if (!event.description) {
         event.description = "";
       }
-      event.date_debut = event.date_debut.replace(/[-:]|[.].*/g, "");
-      event.date_fin = event.date_fin.replace(/[-:]|[.].*/g, "");
       ics.push(event);
     }
     return ics;
@@ -128,47 +117,26 @@ async function _getPlanning(
   }
 }
 
-function convertToICS(calendar: any[]) {
+function convertToICS(calendar: any[]): string {
   debug("Convert to ics ...");
-  // Création du fichier ICS à partir des données récupérées
-  let icsMSG = `BEGIN:VCALENDAR
-CALSCALE:GREGORIAN
-METHOD:PUBLISH
-PRODID:-//Aurion//FR
-VERSION:2.0
-`;
-  // const icalendar = ical({ name: "Aurion Synchronizer", prodId: "//aurion-synchronizer.onrender.com//Aurion-Synchronizer//FR" });
-  // icalendar.timezone("Europe/Paris");
-  try {
-    for (let event of calendar) {
-      debug(event.date_debut);
-      // icalendar.createEvent({
-      //   start: new Date(),
-      //   end: new Date(),
-      //   summary: event.favori.f3,
-      //   location: event.favori.f2,
-      //   description: `${event.type_activite}\nIntervenants: ${event.intervenants}\n${event.description}`,
-      // });
-      icsMSG += `BEGIN:VEVENT
-UID:${randomUUID()}
-DTSTAMP:${moment().format("YYYYMMDDThhmmss")}
-DTSTART;TZID=Europe/Paris:${event.date_debut}
-DTEND;TZID=Europe/Paris:${event.date_fin}
-SUMMARY:${event.favori.f3}
-LOCATION:${event.favori.f2}
-DESCRIPTION:${event.type_activite}\\nIntervenants: ${event.intervenants}\\n${
-        String(event.description).replace(/\n/g, "\\n")
-      }
-END:VEVENT
-`;
-    }
-  } catch (error) {
-    debug(error);
+  const icalendar = ical({
+    name: "Aurion Synchronizer",
+    timezone: "Europe/Paris",
+    prodId: "//aurion-synchronizer.onrender.com//Aurion-Synchronizer//FR",
+  });
+  for (let event of calendar) {
+    icalendar.createEvent({
+      start: event.date_debut,
+      end: event.date_fin,
+      summary: event.favori.f3,
+      location: event.favori.f2,
+      description: `${event.type_activite}\nIntervenants: ${
+        event.intervenants
+      }\n${String(event.description).replace(/\\n/g, "\n")}`,
+    });
   }
-  // icalendar.save(path.join(__dirname, "../assets", "calendar.ics"));
-  icsMSG += "END:VCALENDAR";
-  debug("ICS converted");
-  return icsMSG;
+  debug("Converted to ics");
+  return icalendar.toString();
 }
 
 function saveToDatabase(icsCalendar: string, username: string) {
@@ -181,7 +149,7 @@ function saveToDatabase(icsCalendar: string, username: string) {
       userCalendar.calendarContent = icsCalendar;
     })
     .catch((error) => {
-      debug("[INFO] Error saving to database :" + error.message);
+      debug("Error saving to database :" + error.message);
       return Error(`Error saving to database : ${error.message}`);
     });
 }
@@ -226,12 +194,15 @@ async function updateMyPlanning(
 ) {
   try {
     const user = await UserController.getUser(request.cookies.username);
-    _getPlanning(user.aurionToken, moment().format(), moment().add(1, "year"))
-      .then((calendar) => {
-        const icsCalendar = convertToICS(calendar);
-        saveToDatabase(icsCalendar, user.username);
-        writeICS(icsCalendar, user.calendarLink);
-      });
+    _getPlanning(
+      user.aurionToken,
+      moment().format(),
+      moment().add(1, "year")
+    ).then((calendar) => {
+      const icsCalendar = convertToICS(calendar);
+      saveToDatabase(icsCalendar, user.username);
+      writeICS(icsCalendar, user.calendarLink);
+    });
     response.redirect("/planning/link");
   } catch (error: any) {
     response.status(400).render("planning", {
