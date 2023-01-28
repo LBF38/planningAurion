@@ -88,14 +88,15 @@ async function deleteUser(req: Request, res: Response, next: NextFunction) {
                 if (err) {
                     debug(err);
                 }
-                console.log("File deleted");
+                debug("File deleted");
             });
         }
     );
     await UserCalendar.deleteOne({ username: req.body.username });
-    console.log("User deleted");
+    debug("User deleted");
     res.clearCookie("username");
-    res.render("/",{delSuccess: true});
+    res.cookie("delSuccess", true, { maxAge: 1000, path: "/" });
+    res.redirect("/");
 }
 
 export default { getToken, getUser, deleteUser };
