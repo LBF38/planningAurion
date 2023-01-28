@@ -5,6 +5,7 @@ import moment from "moment";
 import fs from "fs";
 import { randomUUID } from "crypto";
 import { NextFunction, Request, Response } from "express";
+import ical, { ICalCalendarMethod } from "ical-generator";
 const debug = require("debug")("controllers:planning");
 
 import UserCalendar from "../models/calendar";
@@ -46,7 +47,11 @@ async function getPlanning(req: Request, res: Response, next: NextFunction) {
       .status(400)
       .render("planning", { error: "Missing username parameter" });
   }
-  const userCalendar = await UserCalendar.findOne({ username: username });
+  const userCalendar = await UserCalendar.findOne({ username: username }).catch(
+    (error) => {
+      res.status(400).render("planning", { error: error.message });
+    }
+  );
   const aurionToken: string = userCalendar!.aurionToken;
   const icsLink: string = userCalendar!.calendarLink;
 
@@ -94,9 +99,12 @@ async function _getPlanning(
         date_fin: moment(endDate).format("YYYY-MM-DD"),
       },
     };
-
     const response = await axios(config);
     var calendar = response.data;
+    fs.writeFileSync(
+      path.join(__dirname, "../assets", "raw_data.json"),
+      JSON.stringify(calendar)
+    );
     var ics = [];
     for (let i = 0; i < calendar.length; i++) {
       const event = calendar[i];
@@ -129,9 +137,19 @@ METHOD:PUBLISH
 PRODID:-//Aurion//FR
 VERSION:2.0
 `;
-
-  for (let event of calendar) {
-    icsMSG += `BEGIN:VEVENT
+  // const icalendar = ical({ name: "Aurion Synchronizer", prodId: "//aurion-synchronizer.onrender.com//Aurion-Synchronizer//FR" });
+  // icalendar.timezone("Europe/Paris");
+  try {
+    for (let event of calendar) {
+      debug(event.date_debut);
+      // icalendar.createEvent({
+      //   start: new Date(),
+      //   end: new Date(),
+      //   summary: event.favori.f3,
+      //   location: event.favori.f2,
+      //   description: `${event.type_activite}\nIntervenants: ${event.intervenants}\n${event.description}`,
+      // });
+      icsMSG += `BEGIN:VEVENT
 UID:${randomUUID()}
 DTSTAMP:${moment().format("YYYYMMDDThhmmss")}
 DTSTART;TZID=Europe/Paris:${event.date_debut}
@@ -139,18 +157,22 @@ DTEND;TZID=Europe/Paris:${event.date_fin}
 SUMMARY:${event.favori.f3}
 LOCATION:${event.favori.f2}
 DESCRIPTION:${event.type_activite}\\nIntervenants: ${event.intervenants}\\n${
-      event.description
-    }
+        String(event.description).replace(/\n/g, "\\n")
+      }
 END:VEVENT
 `;
+    }
+  } catch (error) {
+    debug(error);
   }
+  // icalendar.save(path.join(__dirname, "../assets", "calendar.ics"));
   icsMSG += "END:VCALENDAR";
   debug("ICS converted");
   return icsMSG;
 }
 
 function saveToDatabase(icsCalendar: string, username: string) {
-  console.log("Save to database...");
+  debug("Save to database...");
   UserCalendar.findOneAndUpdate({ username: username })
     .then((userCalendar) => {
       if (!userCalendar) {
@@ -159,7 +181,7 @@ function saveToDatabase(icsCalendar: string, username: string) {
       userCalendar.calendarContent = icsCalendar;
     })
     .catch((error) => {
-      console.log("[INFO] Error saving to database :" + error.message)
+      debug("[INFO] Error saving to database :" + error.message);
       return Error(`Error saving to database : ${error.message}`);
     });
 }
@@ -192,7 +214,7 @@ async function updatePlannings() {
         writeICS(icsCalendar, user.calendarLink);
       })
       .catch((error) => {
-        console.error(error);
+        debug(error);
       });
   }
 }
@@ -209,9 +231,6 @@ async function updateMyPlanning(
         const icsCalendar = convertToICS(calendar);
         saveToDatabase(icsCalendar, user.username);
         writeICS(icsCalendar, user.calendarLink);
-      })
-      .catch((error) => {
-        console.error(error);
       });
     response.redirect("/planning/link");
   } catch (error: any) {
