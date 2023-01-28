@@ -5,6 +5,12 @@
   </a>
 </p>
 
+<p align="center">
+  <a href="./docs/README.md"><strong>Documentation</strong></a> .
+  <a href="./docs/synchronisation.md"><strong>Guide synchronisation</strong></a> .
+  <a href="https://github.com/lbf38/planningAurion/issues"><strong>Issues</strong></a>
+</p>
+
 ***
 ![Release info](https://img.shields.io/github/v/release/lbf38/planningAurion?style=plastic) ![GitHub issues](https://img.shields.io/github/issues-raw/lbf38/planningAurion?style=plastic) ![GitHub pull requests](https://img.shields.io/github/issues-pr-raw/lbf38/planningAurion?style=plastic)
 
@@ -108,3 +114,5 @@ Actions possibles :
 > **Note**
 > Le code que vous trouverez ici fut la possibilité pour moi d'apprendre TypeScript, NodeJS et d'autres technologies auxquelles je n'étais pas particulièrement familier. Il est donc possible que le code soit peu optimisé ou mal écrit. N'hésitez pas à me faire des retours sur le code ou sur le projet en général.
 > La structure du code et les fonctions mises en place pourraient être nettement améliorées. Cependant, ce projet consistait en un court side project afin d'automatiser la synchronisation de mon calendrier avec celui de l'école. Il n'a pas pour but d'être un projet à long terme.
+>
+> *- LBF38*
