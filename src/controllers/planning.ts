@@ -1,14 +1,14 @@
 require("dotenv/config");
 import axios from "axios";
-import path from "path";
-import moment from "moment";
-import fs from "fs";
-import { randomUUID } from "crypto";
 import { NextFunction, Request, Response } from "express";
+import fs from "fs";
+import moment from "moment";
+import path from "path";
 const debug = require("debug")("controllers:planning");
 
-import UserCalendar from "../models/calendar";
+import ical from "ical-generator";
 import mongoose from "mongoose";
+import UserCalendar from "../models/calendar";
 import UserController from "./user";
 
 const apiURL: string = "https://formation.ensta-bretagne.fr/mobile";
@@ -94,7 +94,6 @@ async function _getPlanning(
         date_fin: moment(endDate).format("YYYY-MM-DD"),
       },
     };
-
     const response = await axios(config);
     var calendar = response.data;
     var ics = [];
@@ -109,8 +108,6 @@ async function _getPlanning(
       if (!event.description) {
         event.description = "";
       }
-      event.date_debut = event.date_debut.replace(/[-:]|[.].*/g, "");
-      event.date_fin = event.date_fin.replace(/[-:]|[.].*/g, "");
       ics.push(event);
     }
     return ics;
@@ -120,37 +117,30 @@ async function _getPlanning(
   }
 }
 
-function convertToICS(calendar: any[]) {
+function convertToICS(calendar: any[]): string {
   debug("Convert to ics ...");
-  // Création du fichier ICS à partir des données récupérées
-  let icsMSG = `BEGIN:VCALENDAR
-CALSCALE:GREGORIAN
-METHOD:PUBLISH
-PRODID:-//Aurion//FR
-VERSION:2.0
-`;
-
+  const icalendar = ical({
+    name: "Aurion Synchronizer",
+    timezone: "Europe/Paris",
+    prodId: "//aurion-synchronizer.onrender.com//Aurion-Synchronizer//FR",
+  });
   for (let event of calendar) {
-    icsMSG += `BEGIN:VEVENT
-UID:${randomUUID()}
-DTSTAMP:${moment().format("YYYYMMDDThhmmss")}
-DTSTART;TZID=Europe/Paris:${event.date_debut}
-DTEND;TZID=Europe/Paris:${event.date_fin}
-SUMMARY:${event.favori.f3}
-LOCATION:${event.favori.f2}
-DESCRIPTION:${event.type_activite}\\nIntervenants: ${event.intervenants}\\n${
-      event.description
-    }
-END:VEVENT
-`;
+    icalendar.createEvent({
+      start: event.date_debut,
+      end: event.date_fin,
+      summary: event.favori.f3,
+      location: event.favori.f2,
+      description: `${event.type_activite}\nIntervenants: ${
+        event.intervenants
+      }\n${String(event.description).replace(/\\n/g, "\n")}`,
+    });
   }
-  icsMSG += "END:VCALENDAR";
-  debug("ICS converted");
-  return icsMSG;
+  debug("Converted to ics");
+  return icalendar.toString();
 }
 
 function saveToDatabase(icsCalendar: string, username: string) {
-  console.log("Save to database...");
+  debug("Save to database...");
   UserCalendar.findOneAndUpdate({ username: username })
     .then((userCalendar) => {
       if (!userCalendar) {
@@ -159,7 +149,7 @@ function saveToDatabase(icsCalendar: string, username: string) {
       userCalendar.calendarContent = icsCalendar;
     })
     .catch((error) => {
-      console.log("[INFO] Error saving to database :" + error.message)
+      debug("Error saving to database :" + error.message);
       return Error(`Error saving to database : ${error.message}`);
     });
 }
@@ -192,7 +182,7 @@ async function updatePlannings() {
         writeICS(icsCalendar, user.calendarLink);
       })
       .catch((error) => {
-        console.error(error);
+        debug(error);
       });
   }
 }
@@ -204,15 +194,15 @@ async function updateMyPlanning(
 ) {
   try {
     const user = await UserController.getUser(request.cookies.username);
-    _getPlanning(user.aurionToken, moment().format(), moment().add(1, "year"))
-      .then((calendar) => {
-        const icsCalendar = convertToICS(calendar);
-        saveToDatabase(icsCalendar, user.username);
-        writeICS(icsCalendar, user.calendarLink);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+    _getPlanning(
+      user.aurionToken,
+      moment().format(),
+      moment().add(1, "year")
+    ).then((calendar) => {
+      const icsCalendar = convertToICS(calendar);
+      saveToDatabase(icsCalendar, user.username);
+      writeICS(icsCalendar, user.calendarLink);
+    });
     response.redirect("/planning/link");
   } catch (error: any) {
     response.status(400).render("planning", {
