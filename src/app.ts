@@ -38,6 +38,15 @@ app.use((request: Request, response: Response, next: NextFunction) => {
   next();
 });
 
+// allow scripts from https://www.googletagmanager.com
+app.use((request: Request, response: Response, next: NextFunction) => {
+    response.setHeader(
+        "Content-Security-Policy",
+        "script-src 'self' https://www.googletagmanager.com"
+    );
+    next();
+});
+
 app.use("/", mainRoutes);
 app.use("/planning", planningRoutes);
 app.use("/auth", userRoutes);
