@@ -35,16 +35,12 @@ app.use((request: Request, response: Response, next: NextFunction) => {
     "Access-Control-Allow-Methods",
     "GET, POST, PUT, DELETE, PATCH, OPTIONS"
   );
+  // allow scripts from https://www.googletagmanager.com
+  response.setHeader(
+    "Content-Security-Policy",
+    "script-src 'self' https://www.googletagmanager.com"
+  );
   next();
-});
-
-// allow scripts from https://www.googletagmanager.com
-app.use((request: Request, response: Response, next: NextFunction) => {
-    response.setHeader(
-        "Content-Security-Policy",
-        "script-src 'self' https://www.googletagmanager.com"
-    );
-    next();
 });
 
 app.use("/", mainRoutes);
