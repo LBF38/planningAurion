@@ -1,6 +1,6 @@
 {
   "name": "aurion-synchronizer",
-  "version": "2.1.0-beta",
+  "version": "2.2.0",
   "description": "Aurion Synchronizer",
   "main": "server.ts",
   "scripts": {
