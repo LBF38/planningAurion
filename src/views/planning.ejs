@@ -9,6 +9,9 @@
   />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+
+  <link rel="icon" href="/img/favicon.ico" type="image/png" />
+
   <!-- Font Awesome -->
   <link
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
@@ -38,21 +41,7 @@
 </head>
 <body>
 <main class="my-5">
-  <%if(typeof icsLink !== 'undefined') {%>
-  <!-- Download OK alert -->
-  <div
-          class="alert alert-success mb-3 alert-absolute"
-          id="dl-ok"
-          role="alert"
-          data-mdb-color="secondary"
-          style="padding-left: 0.5rem; margin-left: 11%; margin-right: 11%"
-  >
-    <i class="fas fa-calendar-check me-2"></i>
-    Your planning is ready!
-    <a href="<%=icsLink%>">Click here</a> to download it.
-  </div>
-  <!-- Download OK alert -->
-  <%}%> <% if(typeof error !== 'undefined') {%>
+  <% if(typeof error !== 'undefined') {%>
     <!-- input alert -->
     <div
             class="alert alert-danger mb-3 alert-absolute"
@@ -158,6 +147,27 @@
           <!-- Control Card -->
           <div class="col-4">
             <div class="card user-card">
+              <%if(typeof icsLink !== 'undefined') {%>
+
+              <!-- Card title -->
+              <div class="card-header">
+                <!-- Download OK alert -->
+                <div
+                        class="alert alert-success mb-1 alert-absolute"
+                        id="dl-ok"
+                        role="alert"
+                        data-mdb-color="secondary"
+                        style="padding-left: 0.5rem"
+                >
+                  <i class="fas fa-calendar-check me-2"></i>
+                  Your planning is ready!
+                  <a href="<%=icsLink%>">Click here</a> to download it.
+                </div>
+                <!-- Download OK alert -->
+              </div>
+              <!-- Card title -->
+              <%}%>
+
               <!-- Card content -->
               <div class="card-body card-body-cascade">
                 <% if(typeof error !== 'undefined') { if(error.match(/update/))
@@ -179,6 +189,7 @@
                 <h4 class="mb-4">
                   My planning
                 </h4>
+
 
                 <!-- Manual update -->
                 <form
