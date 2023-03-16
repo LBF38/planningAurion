@@ -33,7 +33,7 @@ importers:
       nodemon: ^2.0.20
       only-allow: ^1.1.1
       ts-node: ^10.9.1
-      typescript: ^4.9.4
+      typescript: ^5.0.0
     dependencies:
       axios: 1.2.3_debug@4.3.4
       cookie-parser: 1.4.6
@@ -64,8 +64,8 @@ importers:
       jest: 29.3.1_zfha7dvnw4nti6zkbsmhmn6xo4
       mongodb-memory-server: 8.11.1
       nodemon: 2.0.20
-      ts-node: 10.9.1_awa2wsr5thmg3i7jqycphctjfq
-      typescript: 4.9.4
+      ts-node: 10.9.1_dwbejauar3heyjbavp5dng3rsy
+      typescript: 5.0.2
 
 packages:
 
@@ -4483,7 +4483,7 @@ packages:
       pretty-format: 29.3.1
       slash: 3.0.0
       strip-json-comments: 3.1.1
-      ts-node: 10.9.1_awa2wsr5thmg3i7jqycphctjfq
+      ts-node: 10.9.1_dwbejauar3heyjbavp5dng3rsy
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -5845,7 +5845,7 @@ packages:
     dependencies:
       punycode: 2.2.0
 
-  /ts-node/10.9.1_awa2wsr5thmg3i7jqycphctjfq:
+  /ts-node/10.9.1_dwbejauar3heyjbavp5dng3rsy:
     resolution: {integrity: sha512-NtVysVPkxxrwFGUUxGYhfux8k78pQB3JqYBXlLRZgdGUqTO5wU/UyHop5p70iEbGhB7q5KmiZiU0Y3KlJrScEw==}
     hasBin: true
     peerDependencies:
@@ -5871,7 +5871,7 @@ packages:
       create-require: 1.1.1
       diff: 4.0.2
       make-error: 1.3.6
-      typescript: 4.9.4
+      typescript: 5.0.2
       v8-compile-cache-lib: 3.0.1
       yn: 3.1.1
     dev: true
@@ -5906,9 +5906,9 @@ packages:
       mime-types: 2.1.35
     dev: false
 
-  /typescript/4.9.4:
-    resolution: {integrity: sha512-Uz+dTXYzxXXbsFpM86Wh3dKCxrQqUcVMxwU54orwlJjOpO3ao8L7j5lH+dWfTwgCwIuM9GQ2kvVotzYJMXTBZg==}
-    engines: {node: '>=4.2.0'}
+  /typescript/5.0.2:
+    resolution: {integrity: sha512-wVORMBGO/FAs/++blGNeAVdbNKtIh1rbBL2EyQ1+J9lClJ93KiiKe8PmFIVdXhHcyv44SL9oglmfeSsndo0jRw==}
+    engines: {node: '>=12.20'}
     hasBin: true
     dev: true
 
