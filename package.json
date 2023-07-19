@@ -26,7 +26,7 @@
     "helmet": "^6.0.1",
     "ical-generator": "^3.6.1",
     "moment": "^2.29.4",
-    "mongoose": "^6.8.4",
+    "mongoose": "^6.11.3",
     "mongoose-unique-validator": "^3.1.0",
     "only-allow": "^1.1.1",
     "firebase": "^9.16.0"
