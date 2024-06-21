@@ -4,99 +4,101 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-dependencies:
-  axios:
-    specifier: ^1.6.0
-    version: 1.6.0(debug@4.3.4)
-  cookie-parser:
-    specifier: ^1.4.6
-    version: 1.4.6
-  debug:
-    specifier: ^4.3.4
-    version: 4.3.4
-  dotenv:
-    specifier: ^16.0.3
-    version: 16.0.3
-  ejs:
-    specifier: ^3.1.10
-    version: 3.1.10
-  ejs-lint:
-    specifier: ^2.0.0
-    version: 2.0.0
-  express:
-    specifier: ^4.19.2
-    version: 4.19.2
-  firebase:
-    specifier: ^9.16.0
-    version: 9.16.0
-  fs:
-    specifier: 0.0.1-security
-    version: 0.0.1-security
-  helmet:
-    specifier: ^6.0.1
-    version: 6.0.1
-  ical-generator:
-    specifier: ^3.6.1
-    version: 3.6.1(@types/node@18.11.18)(moment@2.29.4)
-  moment:
-    specifier: ^2.29.4
-    version: 2.29.4
-  mongoose:
-    specifier: ^6.11.3
-    version: 6.11.3
-  mongoose-unique-validator:
-    specifier: ^3.1.0
-    version: 3.1.0(mongoose@6.11.3)
-  only-allow:
-    specifier: ^1.1.1
-    version: 1.1.1
+importers:
 
-devDependencies:
-  '@babel/core':
-    specifier: ^7.20.12
-    version: 7.20.12
-  '@babel/preset-env':
-    specifier: ^7.20.2
-    version: 7.20.2(@babel/core@7.20.12)
-  '@babel/preset-typescript':
-    specifier: ^7.18.6
-    version: 7.18.6(@babel/core@7.20.12)
-  '@types/cookie-parser':
-    specifier: ^1.4.3
-    version: 1.4.3
-  '@types/debug':
-    specifier: ^4.1.7
-    version: 4.1.7
-  '@types/express':
-    specifier: ^4.17.15
-    version: 4.17.15
-  '@types/jest':
-    specifier: ^29.2.5
-    version: 29.2.5
-  '@types/mongoose-unique-validator':
-    specifier: ^1.0.6
-    version: 1.0.6
-  '@types/node':
-    specifier: ^18.11.18
-    version: 18.11.18
-  babel-jest:
-    specifier: ^29.3.1
-    version: 29.3.1(@babel/core@7.20.12)
-  jest:
-    specifier: ^29.3.1
-    version: 29.3.1(@types/node@18.11.18)(ts-node@10.9.1)
-  mongodb-memory-server:
-    specifier: ^8.11.1
-    version: 8.11.1
-  nodemon:
-    specifier: ^2.0.20
-    version: 2.0.20
-  ts-node:
-    specifier: ^10.9.1
-    version: 10.9.1(@types/node@18.11.18)(typescript@4.9.4)
-  typescript:
-    specifier: ^4.9.4
-    version: 4.9.4
+  .:
+    dependencies:
+      axios:
+        specifier: ^1.6.0
+        version: 1.6.0(debug@4.3.4)
+      cookie-parser:
+        specifier: ^1.4.6
+        version: 1.4.6
+      debug:
+        specifier: ^4.3.4
+        version: 4.3.4
+      dotenv:
+        specifier: ^16.0.3
+        version: 16.0.3
+      ejs:
+        specifier: ^3.1.10
+        version: 3.1.10
+      ejs-lint:
+        specifier: ^2.0.0
+        version: 2.0.0
+      express:
+        specifier: ^4.19.2
+        version: 4.19.2
+      firebase:
+        specifier: ^9.16.0
+        version: 9.16.0
+      fs:
+        specifier: 0.0.1-security
+        version: 0.0.1-security
+      helmet:
+        specifier: ^6.0.1
+        version: 6.0.1
+      ical-generator:
+        specifier: ^3.6.1
+        version: 3.6.1(@types/node@18.11.18)(moment@2.29.4)
+      moment:
+        specifier: ^2.29.4
+        version: 2.29.4
+      mongoose:
+        specifier: ^6.11.3
+        version: 6.11.3
+      mongoose-unique-validator:
+        specifier: ^3.1.0
+        version: 3.1.0(mongoose@6.11.3)
+      only-allow:
+        specifier: ^1.1.1
+        version: 1.1.1
+    devDependencies:
+      '@babel/core':
+        specifier: ^7.20.12
+        version: 7.20.12
+      '@babel/preset-env':
+        specifier: ^7.20.2
+        version: 7.20.2(@babel/core@7.20.12)
+      '@babel/preset-typescript':
+        specifier: ^7.18.6
+        version: 7.18.6(@babel/core@7.20.12)
+      '@types/cookie-parser':
+        specifier: ^1.4.3
+        version: 1.4.3
+      '@types/debug':
+        specifier: ^4.1.7
+        version: 4.1.7
+      '@types/express':
+        specifier: ^4.17.15
+        version: 4.17.15
+      '@types/jest':
+        specifier: ^29.2.5
+        version: 29.2.5
+      '@types/mongoose-unique-validator':
+        specifier: ^1.0.6
+        version: 1.0.6
+      '@types/node':
+        specifier: ^18.11.18
+        version: 18.11.18
+      babel-jest:
+        specifier: ^29.3.1
+        version: 29.3.1(@babel/core@7.20.12)
+      jest:
+        specifier: ^29.3.1
+        version: 29.3.1(@types/node@18.11.18)(ts-node@10.9.1)
+      mongodb-memory-server:
+        specifier: ^8.11.1
+        version: 8.11.1
+      nodemon:
+        specifier: ^2.0.20
+        version: 2.0.20
+      ts-node:
+        specifier: ^10.9.1
+        version: 10.9.1(@types/node@18.11.18)(typescript@4.9.4)
+      typescript:
+        specifier: ^4.9.4
+        version: 4.9.4
 
 packages:
 
@@ -3563,11 +3565,11 @@ packages:
       balanced-match: 1.0.2
     dev: false
 
-  /braces@3.0.2:
-    resolution: {integrity: sha512-b8um+L1RzM3WDSzvhm6gIz1yfTbBt6YTlcEKAvsmqCZZFw46z626lVj9j1yEPW33H5H+lBQpZMP1k8l+78Ha0A==}
+  /braces@3.0.3:
+    resolution: {integrity: sha512-yQbXgO/OSZVD2IsiLlro+7Hf6Q18EJrKSEsdoMzKePKXct3gvD8oLcOQdIzGupr5Fj+EDe8gO/lxc1BzfMpxvA==}
     engines: {node: '>=8'}
     dependencies:
-      fill-range: 7.0.1
+      fill-range: 7.1.1
 
   /browserslist@4.21.4:
     resolution: {integrity: sha512-CBHJJdDmgjl3daYjN5Cp5kbTf1mUhZoS+beLklHIvkOWscs83YAhLlF3Wsh/lciQYAcbBJgTOD44VtG31ZM4Hw==}
@@ -3675,7 +3677,7 @@ packages:
     engines: {node: '>= 8.10.0'}
     dependencies:
       anymatch: 3.1.3
-      braces: 3.0.2
+      braces: 3.0.3
       glob-parent: 5.1.2
       is-binary-path: 2.1.0
       is-glob: 4.0.3
@@ -4133,8 +4135,8 @@ packages:
       minimatch: 5.1.6
     dev: false
 
-  /fill-range@7.0.1:
-    resolution: {integrity: sha512-qOo9F+dMUmC2Lcb4BbVvnKJxTPjCm+RRpe4gDuGrzkL7mEVl/djYSu2OdQ2Pa302N4oqkSg9ir6jaLWJ2USVpQ==}
+  /fill-range@7.1.1:
+    resolution: {integrity: sha512-YsGpe3WHLK8ZYi4tWDg2Jy3ebRz2rXowDxnld4bkQB00cc/1Zw9AWnC0i9ztDJitivtQvaI9KaLyKrc+hBW0yg==}
     engines: {node: '>=8'}
     dependencies:
       to-regex-range: 5.0.1
@@ -5149,7 +5151,7 @@ packages:
     resolution: {integrity: sha512-DMy+ERcEW2q8Z2Po+WNXuw3c5YaUSFjAO5GsJqfEl7UjvtIuFKO6ZrKvcItdy98dwFI2N1tg3zNIdKaQT+aNdA==}
     engines: {node: '>=8.6'}
     dependencies:
-      braces: 3.0.2
+      braces: 3.0.3
       picomatch: 2.3.1
 
   /mime-db@1.52.0:
