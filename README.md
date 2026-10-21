@@ -14,6 +14,9 @@
 ***
 ![Release info](https://img.shields.io/github/v/release/lbf38/planningAurion?style=plastic) ![GitHub issues](https://img.shields.io/github/issues-raw/lbf38/planningAurion?style=plastic) ![GitHub pull requests](https://img.shields.io/github/issues-pr-raw/lbf38/planningAurion?style=plastic)
 
+> [!WARNING]
+> Ce projet n'est plus maintenu et est archivé.
+
 # Introduction
 
 Ce projet consiste à automatiser la récupération du calendrier AURION des cours de l'[ENSTA Bretagne](https://ensta-bretagne.fr).
