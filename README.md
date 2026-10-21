@@ -63,7 +63,7 @@ ou
 pnpm run dev
 ```
 
-> **Note**
+> [!NOTE]
 > Passage à `pnpm` plutôt que `npm` pour gérer les dépendances.
 
 ## Utilisation
@@ -80,7 +80,7 @@ Actions possibles :
 
 ## Roadmap
 
-> **Warning**
+> [!WARNING]
 > Ce projet sera maintenu jusqu'à la fin de l'année scolaire 2022-2023.
 
 - [x] Backend
@@ -114,7 +114,7 @@ Actions possibles :
 - [@LBF38](https://github.com/LBF38) : développeur principal du projet (backend et frontend)
 - [@thomas40510](https://github.com/thomas40510) : développeur sur la partie frontend
 
-> **Note**
+> [!NOTE]
 > Le code que vous trouverez ici fut la possibilité pour moi d'apprendre TypeScript, NodeJS et d'autres technologies auxquelles je n'étais pas particulièrement familier. Il est donc possible que le code soit peu optimisé ou mal écrit. N'hésitez pas à me faire des retours sur le code ou sur le projet en général.
 > La structure du code et les fonctions mises en place pourraient être nettement améliorées. Cependant, ce projet consistait en un court side project afin d'automatiser la synchronisation de mon calendrier avec celui de l'école. Il n'a pas pour but d'être un projet à long terme.
 >
